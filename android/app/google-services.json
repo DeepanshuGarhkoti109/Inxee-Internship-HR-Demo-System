@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "349030483442",
+    "project_id": "hrmanagementsystem-3893d",
+    "storage_bucket": "hrmanagementsystem-3893d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349030483442:android:122eebae7407a84d1c576b",
+        "android_client_info": {
+          "package_name": "com.example.inxee_hr_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCAqoh337S71soOOKCf54yojs9YigOuDc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
