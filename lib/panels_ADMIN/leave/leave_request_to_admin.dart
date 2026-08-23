@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApplyLeaveToAdmin extends StatefulWidget {
   const ApplyLeaveToAdmin({Key? key}) : super(key: key);
@@ -11,286 +12,245 @@ class ApplyLeaveToAdmin extends StatefulWidget {
 }
 
 class _ApplyLeaveToAdminState extends State<ApplyLeaveToAdmin> {
-  String _testValues = '28/02/2024';
-  String _testrangeCount = '5';
-  String _applicationTitleController = 'Leave title';
-
-  static BoxDecoration containerDecoration = BoxDecoration(
-    border: Border.all(
-      color: Colors.black,
-    ),
-    borderRadius: BorderRadius.circular(12),
-  );
-
-  static BoxDecoration subcontainerDecoration = BoxDecoration(
-    border: Border.all(color: Colors.black, width: 10),
-    borderRadius: const BorderRadius.only(
-      topLeft: Radius.circular(10),
-      topRight: Radius.circular(10),
-    ),
-    color: Colors.black,
-  );
-
-  static const TextStyle textStyle =
-      TextStyle(fontSize: 16, color: Colors.black);
+  List<Map<String, String>> leaveRequests = [
+    {
+      'name': 'Deepanshu Garhkoti',
+      'email': 'deepanshuGarhkoti@gmail.com',
+      'date': '28/08/2026',
+      'days': '1 Day',
+      'title': 'Personal Emergency Leave',
+      'details': 'Need to attend an urgent family commitment and personal errands.',
+      'status': 'Pending',
+      'avatar': 'https://images.unsplash.com/photo-1517423738875-5ce310acd3da?auto=format&fit=crop&w=300&q=80',
+    },
+    {
+      'name': 'Rahul Sharma',
+      'email': 'rahul.sharma@inxee.com',
+      'date': '01/09/2026',
+      'days': '2 Days',
+      'title': 'Medical Checkup & Recovery',
+      'details': 'Scheduled routine doctor appointment and medical checkup.',
+      'status': 'Pending',
+      'avatar': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+    },
+    {
+      'name': 'Priya Patel',
+      'email': 'priya.patel@inxee.com',
+      'date': '15/08/2026',
+      'days': '1 Day',
+      'title': 'Festival Vacation Leave',
+      'details': 'Traveling out of station for family festival gathering.',
+      'status': 'Approved',
+      'avatar': 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80',
+    },
+  ];
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.only(left: 10, right: 10),
-          child: ListView.separated(
-            itemCount: 5,
-            itemBuilder: (BuildContext context, int index) {
-              return Column(
-                children: [
-                  const SizedBox(height: 10),
-                  Container(
-                    decoration: containerDecoration,
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: subcontainerDecoration,
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: NetworkImage(
-                                'https://images.unsplash.com/photo-1517423738875-5ce310acd3da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1970&q=80',
-                              ),
-                            ),
-                            title: Text(
-                              'Deepanshu Garhkoti',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white),
-                            ),
-                            subtitle: Text(
-                              'deepanshugarhkoti@gmail.com',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildInfoContainerL('Total Days : 75'),
-                            Expanded(child: Container()),
-                            _buildInfoContainerR('Total Leave : 75'),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildInfoContainerL('Paid Leave : 05'),
-                            Expanded(child: Container()),
-                            _buildInfoContainerR('Unpaid Leave : 5'),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        buildSelectedInfoContainer(
-                          'Selected date: ',
-                          // _selectedDate,
-                          _testValues,
-                        ),
-                        const SizedBox(height: 10),
-                        buildSelectedInfoContainer(
-                          'No. of days: ',
-                          _testrangeCount,
-                        ),
-                        const SizedBox(height: 10),
-                        GestureDetector(
-                          onTap: _applicationForLeave,
-                          child: buildSelectedInfoContainer(
-                            'Application: ',
-                            _applicationTitleController,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(left: 30.0),
-                              child: Text(
-                                'Date : Dateofappli',
-                                style: textStyle,
-                              ),
-                            ),
-                            Expanded(child: Container()),
-                            submitAndCancelButton(),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                      ],
+  void initState() {
+    super.initState();
+    loadCustomLeaves();
+  }
+
+  Future<void> loadCustomLeaves() async {
+    final prefs = await SharedPreferences.getInstance();
+    final customList = prefs.getStringList('mock_leave_list') ?? [];
+    for (var item in customList) {
+      final parts = item.split('|');
+      if (parts.length >= 6) {
+        leaveRequests.insert(0, {
+          'name': parts[1],
+          'email': 'deepanshuGarhkoti@gmail.com',
+          'date': parts[2],
+          'days': parts[3],
+          'title': parts[4].split(' - ').first,
+          'details': parts[4],
+          'status': parts[5],
+          'avatar': 'https://images.unsplash.com/photo-1517423738875-5ce310acd3da?auto=format&fit=crop&w=300&q=80',
+        });
+      }
+    }
+    setState(() {});
+  }
+
+  void updateStatus(int index, String newStatus) {
+    setState(() {
+      leaveRequests[index]['status'] = newStatus;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Leave request marked as $newStatus'),
+        backgroundColor: newStatus == 'Approved' ? const Color(0xff10b981) : Colors.red,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
+          backgroundColor: const Color(0xfff8fafc),
+          body: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            itemCount: leaveRequests.length,
+            itemBuilder: (context, index) {
+              final req = leaveRequests[index];
+              final isPending = req['status'] == 'Pending';
+              final isApproved = req['status'] == 'Approved';
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xffe2e8f0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Employee Header Bar
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: const BoxDecoration(
+                        color: Color(0xff0f172a),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundImage: NetworkImage(req['avatar']!),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  req['name']!,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  req['email']!,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: isApproved
+                                  ? const Color(0xff10b981)
+                                  : (req['status'] == 'Rejected' ? Colors.red : const Color(0xfff59e0b)),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              req['status']!,
+                              style: GoogleFonts.poppins(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Leave Information Content
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "📅 Date: ${req['date']}",
+                                style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xff1e293b)),
+                              ),
+                              Text(
+                                "Duration: ${req['days']}",
+                                style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500, color: const Color(0xff64748b)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            req['title']!,
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xff0f172a),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            req['details']!,
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: const Color(0xff475569),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Action Buttons
+                          if (isPending)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                OutlinedButton.icon(
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: Colors.red,
+                                    side: const BorderSide(color: Colors.red),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                  onPressed: () => updateStatus(index, 'Rejected'),
+                                  icon: const Icon(Icons.close, size: 16),
+                                  label: Text("Reject", style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13)),
+                                ),
+                                const SizedBox(width: 12),
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xff10b981),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                  onPressed: () => updateStatus(index, 'Approved'),
+                                  icon: const Icon(Icons.check, size: 16),
+                                  label: Text("Approve", style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13)),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
-            separatorBuilder: (context, index) => const SizedBox(height: 10),
           ),
         ),
-      );
-
-  Widget _buildInfoContainerR(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 30, top: 20, bottom: 20),
-      child: Text(
-        text,
-        style: textStyle,
-      ),
-    );
-  }
-
-  Widget _buildInfoContainerL(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 30, top: 20, bottom: 20),
-      child: Text(
-        text,
-        style: textStyle,
-      ),
-    );
-  }
-
-  Widget buildSelectedInfoContainer(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: Text(
-              label,
-              style: textStyle,
-            ),
-          ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                value,
-                style: GoogleFonts.actor(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _applicationForLeave() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Application'),
-          content: Text(
-              'sdasdhckscbsknchsdbxcjkcuidbchabxchjdbxcuvdc bhxbc dcasbcgasvcsah cas cscfsytcsachavschsv  sgvcyts cscv yatscscsctsgc c'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget submitAndCancelButton() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 25),
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.red.shade100,
-              border: Border.all(color: Colors.red, width: 2),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: IconButton(
-              iconSize: 20,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Cancel Application'),
-                      content: Text(
-                          'Are you sure you want to cancel the leave application?'),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text('Close'),
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Yes'),
-                          onPressed: () {
-                            //
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              icon: Icon(
-                Icons.close_sharp,
-                color: Colors.red,
-              ),
-            ),
-          ),
-          SizedBox(width: 10),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.green.shade100,
-              border: Border.all(color: Colors.green, width: 2),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: IconButton(
-              iconSize: 20,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Accept Application'),
-                      content: Text(
-                          'Are you sure you want to accept the leave application?'),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text('Close'),
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Accept'),
-                          onPressed: () {
-                            //
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              icon: Icon(
-                Icons.check,
-                color: Colors.green,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

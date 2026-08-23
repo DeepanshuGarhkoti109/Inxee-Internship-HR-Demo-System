@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class ApplyLeave extends StatefulWidget {
@@ -14,365 +15,265 @@ class ApplyLeave extends StatefulWidget {
 
 class _ApplyLeaveState extends State<ApplyLeave> {
   final TextEditingController _applicationController = TextEditingController();
-  final TextEditingController _applicationTitleController =
-      TextEditingController();
+  final TextEditingController _applicationTitleController = TextEditingController();
 
-  String _selectedDate = '';
-  String _range = '';
-  String _rangeCount = '';
-  String _application = '';
-  String _selectedDateInput = '';
-  String _rangeInput = '';
-  String _rangeCountInput = '';
+  String _selectedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+  String _range = 'Full Day';
+  String _rangeCount = '1';
 
-  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    setState(() {
-      if (args.value is PickerDateRange) {
-        final range = args.value as PickerDateRange;
-        final selectedDates = getSelectedDates(range);
-
-        if (selectedDates.isNotEmpty) {
-          final firstSelectedDate = selectedDates.first;
-          final lastSelectedDate = selectedDates.last;
-
-          final formattedStartDate = formatDateTime(firstSelectedDate);
-          final formattedEndDate = formatDateTime(lastSelectedDate);
-
-          _range = '$formattedStartDate - $formattedEndDate';
-
-          final formattedSelectedDates =
-              selectedDates.map((date) => formatDateTime(date)).toList();
-          _selectedDate = formattedSelectedDates.join(', ');
-
-          _rangeCount = selectedDates.length.toString();
-        } else {
-          _selectedDate = '';
-          _range = '';
-          _rangeCount = '';
-        }
-      }
-    });
-  }
-
-  List<DateTime> getSelectedDates(PickerDateRange range) {
-    final DateTime? startDate = range.startDate;
-    final DateTime? endDate = range.endDate ?? range.startDate;
-
-    final selectedDates = <DateTime>[];
-    DateTime? currentDate = startDate;
-
-    while (currentDate!.isBefore(endDate!) ||
-        currentDate!.isAtSameMomentAs(endDate)) {
-      if (currentDate.weekday != DateTime.sunday) {
-        selectedDates.add(currentDate);
-      }
-      currentDate = currentDate.add(const Duration(days: 1));
-    }
-
-    return selectedDates;
-  }
-
-  String formatDateTime(DateTime dateTime) {
-    return DateFormat('dd/MM/yyyy').format(dateTime);
-  }
-
-  // Store the initial range for resetting the calendar
   PickerDateRange _initialSelectedRange = PickerDateRange(
     DateTime.now(),
     DateTime.now(),
   );
 
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    setState(() {
+      if (args.value is PickerDateRange) {
+        final range = args.value as PickerDateRange;
+        final startDate = range.startDate;
+        final endDate = range.endDate ?? range.startDate;
+
+        if (startDate != null && endDate != null) {
+          final diff = endDate.difference(startDate).inDays + 1;
+          _rangeCount = diff.toString();
+          final startStr = DateFormat('dd/MM/yyyy').format(startDate);
+          final endStr = DateFormat('dd/MM/yyyy').format(endDate);
+          _range = diff == 1 ? startStr : '$startStr - $endStr';
+          _selectedDate = startStr;
+        }
+      }
+    });
+  }
+
+  Future<void> _submitLeave() async {
+    final title = _applicationTitleController.text.trim();
+    final reason = _applicationController.text.trim();
+
+    if (title.isEmpty || reason.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a title and description for your leave.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final currentLeaves = prefs.getStringList('mock_leave_list') ?? [];
+    final newLeaveEntry = '${DateTime.now().millisecondsSinceEpoch}|Deepanshu Garhkoti|$_selectedDate|$_rangeCount days|$title - $reason|Pending';
+    currentLeaves.insert(0, newLeaveEntry);
+    await prefs.setStringList('mock_leave_list', currentLeaves);
+
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Application Submitted',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          ),
+          content: Text(
+            'Your leave application for $_rangeCount day(s) has been submitted successfully to HR for review.',
+            style: GoogleFonts.poppins(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                setState(() {
+                  _applicationTitleController.clear();
+                  _applicationController.clear();
+                });
+              },
+              child: Text(
+                'OK',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade300,
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: 15),
-              Container(
-                height: 400,
-                child: SfDateRangePicker(
-                  onSelectionChanged: _onSelectionChanged,
-                  selectionMode: DateRangePickerSelectionMode.range,
-                  initialSelectedRange: _initialSelectedRange,
-                  startRangeSelectionColor: Colors.greenAccent[400],
-                  endRangeSelectionColor: Colors.red,
-                  rangeSelectionColor: Colors.blue.shade200,
-                  selectionShape: DateRangePickerSelectionShape.rectangle,
-                  selectionTextStyle: const TextStyle(fontSize: 18),
-                  rangeTextStyle: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 17,
-                  ),
-                  monthCellStyle: DateRangePickerMonthCellStyle(
-                    todayCellDecoration: BoxDecoration(
-                      color: Colors.blue.shade400,
-                      border: Border.all(color: Colors.black, width: 2),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    todayTextStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                    cellDecoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.black26),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    weekendTextStyle: TextStyle(
-                      color: Colors.redAccent.shade700,
-                    ),
-                    weekendDatesDecoration: BoxDecoration(
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  headerStyle: DateRangePickerHeaderStyle(
-                    backgroundColor: Colors.black,
-                    textStyle: GoogleFonts.actor(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 650),
+        child: Scaffold(
+          backgroundColor: const Color(0xfff8fafc),
+          appBar: AppBar(
+            backgroundColor: const Color(0xff0f172a),
+            elevation: 0,
+            centerTitle: true,
+            title: Text(
+              'APPLY FOR LEAVE',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.5,
               ),
-              SizedBox(height: 25),
-              Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    buildSelectedInfoContainer(
-                      'Selected date: ',
-                      _selectedDate,
-                    ),
-                    const SizedBox(height: 10),
-                    buildSelectedInfoContainer(
-                      'Selected range: ',
-                      _range,
-                    ),
-                    const SizedBox(height: 10),
-                    buildSelectedInfoContainer(
-                      'No. of days: ',
-                      _rangeCount,
-                    ),
-                    const SizedBox(height: 10),
-                    buildLeaveApplicationForm(),
-                    const SizedBox(height: 10),
-                    submitAndCancelButton(),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildSelectedInfoContainer(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white),
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Text(
-                label,
-                style: GoogleFonts.roboto(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  value,
-                  style: GoogleFonts.actor(
-                    fontSize: 15,
-                    color: Colors.black,
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Calendar Card
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xffe2e8f0)),
+                  ),
+                  child: SfDateRangePicker(
+                    onSelectionChanged: _onSelectionChanged,
+                    selectionMode: DateRangePickerSelectionMode.range,
+                    initialSelectedRange: _initialSelectedRange,
+                    startRangeSelectionColor: const Color(0xff3b82f6),
+                    endRangeSelectionColor: const Color(0xff1d4ed8),
+                    rangeSelectionColor: const Color(0xffdbeafe),
+                    headerStyle: DateRangePickerHeaderStyle(
+                      textStyle: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xff1e293b),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget buildLeaveApplicationForm() {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Leave Application:',
-              style: GoogleFonts.roboto(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-              child: TextFormField(
-                maxLength: 100,
-                controller: _applicationTitleController,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.only(bottom: 0, top: 0),
-                  border: InputBorder.none,
-                  labelText: 'Title ',
-                  labelStyle: TextStyle(fontSize: 17),
-                ),
-                maxLines: null,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: TextFormField(
-                maxLength: 500,
-                controller: _applicationController,
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.only(bottom: 0, top: 0),
-                    border: InputBorder.none,
-                    labelText: 'Application',
-                    labelStyle: TextStyle(fontSize: 15)),
-                maxLines: null,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+                const SizedBox(height: 16),
 
-  Widget submitAndCancelButton() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 25),
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                border: Border.all(color: Colors.black),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: TextButton(
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () {
-                  setState(() {
-                    _selectedDate = ''; // Reset selected date value
-                    _range = ''; // Reset selected range value
-                    _rangeCount = ''; // Reset range count value
-                    _application = ''; // Reset application value
-                    _selectedDateInput = ''; // Reset selected date input value
-                    _rangeInput = ''; // Reset range input value
-                    _rangeCountInput = ''; // Reset range count input value
-                    _applicationController
-                        .clear(); // Clear the application text field
-                    _applicationTitleController.clear();
-                    _initialSelectedRange = PickerDateRange(
-                      DateTime.now(),
-                      DateTime.now(),
-                    ); // Reset the initial range of the calendar.
-                  });
-                },
-              ),
-            ),
-            SizedBox(width: 10),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                border: Border.all(color: Colors.black),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: TextButton(
-                child: Text(
-                  'Summit',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () {
-                  setState(() {
-                    _selectedDateInput =
-                        _selectedDate; // Store the selected date value
-                    _rangeInput = _range; // Store the selected range value
-                    _rangeCountInput =
-                        _rangeCount; // Store the range count value
-                  });
-
-                  // TODO: Implement leave application submission logic with the form inputs
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Cancel Application'),
-                        content: Text(
-                            'Are you sure you want to summit the leave application?'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(context).pop(); // Close the dialog
-                            },
-                          ),
-                          TextButton(
-                            child: Text('Summit'),
-                            onPressed: () {
-                              //
-                              Navigator.of(context).pop(); // Close the dialog
-                            },
+                // Selected Info Card
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xffe2e8f0)),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Selected Range:", style: GoogleFonts.poppins(fontSize: 13, color: const Color(0xff64748b))),
+                          Text(_range, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xff1e293b))),
+                        ],
+                      ),
+                      const Divider(height: 20, color: Color(0xffe2e8f0)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Total Days:", style: GoogleFonts.poppins(fontSize: 13, color: const Color(0xff64748b))),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffeff6ff),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              "$_rangeCount Day(s)",
+                              style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xff3b82f6)),
+                            ),
                           ),
                         ],
-                      );
-                    },
-                  );
+                      ),
+                    ],
+                  ),
+                ),
 
-                  // Reset the form inputs
-                  _selectedDate = '';
-                  _range = '';
-                  _rangeCount = '';
-                  _selectedDateInput = '';
-                  _rangeInput = '';
-                  _rangeCountInput = '';
-                  _applicationController.clear();
-                  _applicationTitleController.clear();
-                },
-              ),
+                const SizedBox(height: 16),
+
+                // Form Fields
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xffe2e8f0)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Leave Application Details",
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xff1e293b),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: _applicationTitleController,
+                        decoration: InputDecoration(
+                          labelText: 'Reason / Subject (e.g. Sick Leave, Vacation)',
+                          labelStyle: GoogleFonts.poppins(fontSize: 13),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: _applicationController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          labelText: 'Application Details / Explanation',
+                          labelStyle: GoogleFonts.poppins(fontSize: 13),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          contentPadding: const EdgeInsets.all(14),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Action Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _applicationTitleController.clear();
+                            _applicationController.clear();
+                          });
+                        },
+                        child: Text("Clear Form", style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500)),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor: const Color(0xff0f172a),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        onPressed: _submitLeave,
+                        child: Text("Submit Leave Request", style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

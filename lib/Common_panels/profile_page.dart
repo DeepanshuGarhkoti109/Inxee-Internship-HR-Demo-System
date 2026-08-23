@@ -1,9 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:inxee_hr_application/widgets/button_input.dart';
-import 'package:inxee_hr_application/widgets/dropdown_button.dart';
-import 'package:inxee_hr_application/widgets/text_field_input.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -15,19 +13,25 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _dateofbirthController = TextEditingController();
-  final TextEditingController _designationController = TextEditingController();
+  final TextEditingController _fullNameController =
+      TextEditingController(text: "Deepanshu Garhkoti");
+  final TextEditingController _phoneNumberController =
+      TextEditingController(text: "+91 98765 43210");
+  final TextEditingController _emailController =
+      TextEditingController(text: "deepanshuGarhkoti@gmail.com");
+  final TextEditingController _addressController =
+      TextEditingController(text: "Noida Sector 62, Uttar Pradesh, India");
+  final TextEditingController _dateofbirthController =
+      TextEditingController(text: "15/08/2002");
+  final TextEditingController _designationController =
+      TextEditingController(text: "Software Development Engineer Intern");
   final TextEditingController _dateofjoiningController =
-      TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
+      TextEditingController(text: "15/01/2024");
+  final TextEditingController _ageController =
+      TextEditingController(text: "22");
 
   @override
   void dispose() {
-    super.dispose();
     _fullNameController.dispose();
     _phoneNumberController.dispose();
     _emailController.dispose();
@@ -36,204 +40,195 @@ class _ProfilePageState extends State<ProfilePage> {
     _designationController.dispose();
     _dateofjoiningController.dispose();
     _ageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-
-      //appbar
-
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        centerTitle: true,
-        title: Text('P R O F I L E'),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 10),
-            child: Icon(Icons.edit_note_outlined, size: 30),
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 650),
+        child: Scaffold(
+          backgroundColor: const Color(0xfff8fafc),
+          appBar: AppBar(
+            backgroundColor: const Color(0xff0f172a),
+            elevation: 0,
+            centerTitle: true,
+            title: Text(
+              'EMPLOYEE PROFILE',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.5,
+              ),
+            ),
           ),
-        ],
-      ),
-
-      //
-      body: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
             child: Form(
-              key: _formKey, //form
+              key: _formKey,
               child: Column(
                 children: [
-                  SizedBox(height: 10),
-
-                  //circleavatar for photo
-                  Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 64,
-                        backgroundImage: NetworkImage(
-                            'https://images.unsplash.com/photo-1438283173091-5dbf5c5a3206?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZnVubnl8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60'),
-                      ),
-                      Positioned(
-                        bottom: -10,
-                        left: 80,
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.add_a_photo,
+                  // Profile Photo Card
+                  Center(
+                    child: Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 54,
+                          backgroundColor: const Color(0xff0f172a),
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: const NetworkImage(
+                              'https://images.unsplash.com/photo-1517423738875-5ce310acd3da?auto=format&fit=crop&w=300&q=80',
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: 15),
-
-                  //text field for full name
-
-                  TextFieldInput(
-                    labeltext: 'Full Name',
-                    textEditingController: _fullNameController,
-                    textInputType: TextInputType.name,
-                    prefix: Icon(Icons.person_rounded),
-                  ),
-                  SizedBox(height: 15),
-
-                  //text field for phone number
-
-                  TextFieldInput(
-                    labeltext: 'Phone Number',
-                    prefix: Icon(Icons.phone),
-                    textEditingController: _phoneNumberController,
-                    textInputType: TextInputType.phone,
-                  ),
-                  SizedBox(height: 15),
-
-                  TextFieldInput(
-                    labeltext: 'Email',
-                    prefix: Icon(Icons.email),
-                    textEditingController: _emailController,
-                    textInputType: TextInputType.emailAddress,
-                  ),
-                  SizedBox(height: 15),
-
-                  TextFieldInput(
-                    labeltext: 'Address',
-                    prefix: Icon(Icons.location_on_rounded),
-                    textEditingController: _addressController,
-                    textInputType: TextInputType.streetAddress,
-                  ),
-                  SizedBox(height: 15),
-
-                  //
-
-                  Row(
-                    children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        child: DropdownButtonWidget(
-                          options: [
-                            'Male',
-                            'Female',
-                            'Other'
-                          ], // Define the list items here
-                          prefix: Icon(Icons.person_2_outlined),
-                          labeltext: 'Sex',
-                          Length: 150,
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: Color(0xff3b82f6),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 10),
-                      Container(
-                        width: 160,
-                        child: TextFieldInput(
-                          textEditingController: _dateofbirthController,
-                          textInputType: TextInputType.datetime,
-                          prefix: Icon(Icons.calendar_month_outlined),
-                          labeltext: 'DOB',
-                          hintText: 'dd/mm/yyyy',
-                          onpressed: () async {
-                            DateTime? pickeddate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime(2100));
-
-                            if (pickeddate != null) {
-                              setState(() {
-                                _dateofbirthController.text =
-                                    DateFormat('yyyy/MM/dd').format(pickeddate);
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 15),
-
-                  TextFieldInput(
-                    labeltext: 'Designation ',
-                    prefix: Icon(Icons.photo_camera_front_sharp),
-                    textEditingController: _designationController,
-                    textInputType: TextInputType.text,
-                  ),
-                  SizedBox(height: 15),
-
-                  Row(
-                    children: [
-                      Container(
-                        width: 210,
-                        child: TextFieldInput(
-                          textEditingController: _dateofjoiningController,
-                          textInputType: TextInputType.datetime,
-                          prefix: Icon(Icons.calendar_month_outlined),
-                          labeltext: 'Date of joining',
-                          hintText: 'dd/mm/yyyy',
-                          onpressed: () async {
-                            DateTime? pickeddate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime(2100));
-
-                            if (pickeddate != null) {
-                              setState(() {
-                                _dateofjoiningController.text =
-                                    DateFormat('dd/MM/yyyy').format(pickeddate);
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Container(
-                        width: 100,
-                        child: TextFieldInput(
-                          labeltext: 'Age ',
-                          prefix: Icon(Icons.calendar_today_rounded),
-                          textEditingController: _ageController,
-                          textInputType: TextInputType.number,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
 
-                  //save button
-                  SizedBox(height: 15),
+                  const SizedBox(height: 12),
+                  Text(
+                    "Deepanshu Garhkoti",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xff1e293b),
+                    ),
+                  ),
+                  Text(
+                    "EMP001 • Inxee Systems",
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      color: const Color(0xff64748b),
+                    ),
+                  ),
 
-                  ButtonInput(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
+                  const SizedBox(height: 24),
+
+                  // Profile Details Form
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xffe2e8f0)),
+                    ),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _fullNameController,
+                          decoration: InputDecoration(
+                            labelText: 'Full Name',
+                            prefixIcon: const Icon(Icons.person_rounded),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: _phoneNumberController,
+                          decoration: InputDecoration(
+                            labelText: 'Phone Number',
+                            prefixIcon: const Icon(Icons.phone),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: 'Email Address',
+                            prefixIcon: const Icon(Icons.email_rounded),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: _addressController,
+                          decoration: InputDecoration(
+                            labelText: 'Office / Residential Address',
+                            prefixIcon: const Icon(Icons.location_on_rounded),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: _designationController,
+                          decoration: InputDecoration(
+                            labelText: 'Designation / Role',
+                            prefixIcon: const Icon(Icons.badge_rounded),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: TextFormField(
+                                controller: _dateofjoiningController,
+                                decoration: InputDecoration(
+                                  labelText: 'Date of Joining',
+                                  prefixIcon: const Icon(Icons.calendar_month),
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _ageController,
+                                decoration: InputDecoration(
+                                  labelText: 'Age',
+                                  prefixIcon: const Icon(Icons.cake_rounded),
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff0f172a),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Loading')),
+                          const SnackBar(
+                            content: Text('Profile information updated successfully!'),
+                            backgroundColor: Color(0xff10b981),
+                          ),
                         );
-                      }
-                    },
-                    text: 'Save',
-                  )
+                      },
+                      icon: const Icon(Icons.save_rounded),
+                      label: Text(
+                        'Save Profile Changes',
+                        style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

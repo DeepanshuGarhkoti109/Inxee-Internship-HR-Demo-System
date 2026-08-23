@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:inxee_hr_application/employee_panels/employee_panel.dart';
-
 import 'package:inxee_hr_application/screens/login_page_admin.dart';
 import 'package:inxee_hr_application/screens/otppage.dart';
 import 'package:inxee_hr_application/widgets/button_input.dart';
-
 import 'package:inxee_hr_application/widgets/text_field_input.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,10 +14,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController =
+      TextEditingController(text: "deepanshuGarhkoti@gmail.com");
+  final TextEditingController _passwordController =
+      TextEditingController(text: "password123");
 
-  void LogInUser() {
+  void logInUser() {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
@@ -31,9 +31,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    super.dispose();
   }
 
   void navigateToLoginPageAdmin() {
@@ -55,49 +55,83 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
-  void setState(VoidCallback fn) {
-    _emailController.addListener(() => setState(() {}));
-    super.setState(fn);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xff0f172a),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
             child: Container(
-              padding: EdgeInsets.all(32),
-              width: 500,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 100),
-                  //icons
-
-                  Image.asset(
-                    'lib/images/unnamed.png',
-                    height: 50,
+              constraints: const BoxConstraints(maxWidth: 440),
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Logo / Header Icon
+                  Center(
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff0f172a),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.badge_rounded,
+                        color: Colors.white,
+                        size: 36,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: Text(
+                      'EMPLOYEE LOGIN',
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.5,
+                        color: const Color(0xff0f172a),
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      'Inxee HR Management System',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: const Color(0xff64748b),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
 
-                  const SizedBox(height: 50),
-
-                  //username textfield
+                  // Email input
                   TextFieldInput(
-                    prefix: Icon(Icons.email),
-                    hintText: 'abc@gmail.com',
-                    labeltext: 'Email',
+                    prefix: const Icon(Icons.email_outlined),
+                    hintText: 'name@inxee.com',
+                    labeltext: 'Employee Email',
                     textInputType: TextInputType.emailAddress,
                     textEditingController: _emailController,
                   ),
 
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 18),
 
-                  //password textfield
-
+                  // Password input
                   TextFieldInput(
-                    prefix: Icon(Icons.password),
+                    prefix: const Icon(Icons.lock_outline),
                     labeltext: 'Password',
                     textEditingController: _passwordController,
                     hintText: 'Enter your password',
@@ -105,82 +139,74 @@ class _LoginPageState extends State<LoginPage> {
                     isPass: true,
                   ),
 
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 8),
 
-                  //FORGOT PASSWORD
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                            onPressed: navigateToForgotPassword,
-                            child: Text(
-                              'Forgot Password',
-                              style: GoogleFonts.actor(
-                                fontSize: 17,
-                              ),
-                            )),
-                      ],
+                  // Forgot Password
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: navigateToForgotPassword,
+                      child: Text(
+                        'Forgot Password / OTP Login',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xff3b82f6),
+                        ),
+                      ),
                     ),
                   ),
 
-                  const SizedBox(height: 7),
+                  const SizedBox(height: 12),
 
-                  //LoginIn Button
-
+                  // Login Button
                   ButtonInput(
-                    text: 'LOGIN',
-                    onTap: LogInUser,
+                    text: 'LOGIN AS EMPLOYEE',
+                    onTap: logInUser,
                   ),
 
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 28),
 
-                  //divider
+                  // Divider
+                  Row(
+                    children: [
+                      const Expanded(child: Divider(color: Color(0xffe2e8f0))),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          'OR',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xff94a3b8),
+                          ),
+                        ),
+                      ),
+                      const Expanded(child: Divider(color: Color(0xffe2e8f0))),
+                    ],
+                  ),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            thickness: 0.5,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            'or LOGIN as',
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            thickness: 0.5,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                      ],
+                  const SizedBox(height: 24),
+
+                  // Switch to Admin Login
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: const BorderSide(color: Color(0xffcbd5e1)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  ),
-
-                  const SizedBox(height: 50),
-
-                  //admin lodin
-
-                  Container(
-                    width: 50,
-                    height: 50,
-                    child: GestureDetector(
-                        onTap: navigateToLoginPageAdmin,
-                        child: Image.asset('lib/images/administrator.png')
-                        // SquareTile(
-                        //   height: 50,
-                        //   imagePath: 'lib/images/administrator.png',
-                        // ),
-                        ),
+                    onPressed: navigateToLoginPageAdmin,
+                    icon: const Icon(Icons.admin_panel_settings, color: Color(0xff0f172a)),
+                    label: Text(
+                      'Switch to Admin Login',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xff0f172a),
+                      ),
+                    ),
                   ),
                 ],
               ),

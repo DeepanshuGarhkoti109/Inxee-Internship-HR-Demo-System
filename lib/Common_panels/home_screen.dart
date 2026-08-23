@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_cupertino_date_picker_fork/flutter_cupertino_date_picker_fork.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'attendance_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,9 +15,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  double screenHeight = 0;
-  double screenWidth = 0;
-  Color primary = const Color(0xffeef444c);
+  Color primary = const Color(0xff1e293b);
+  Color accent = const Color(0xff3b82f6);
+  Color successColor = const Color(0xff10b981);
+  Color dangerColor = const Color(0xffef4444);
+
   int slideCount = 0;
   bool showSlideBar = true;
   DateTime? checkInTime;
@@ -29,190 +29,125 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    checkSlideCount();
+    loadSlideData();
   }
 
-  Future<void> checkSlideCount() async {
-    Directory appDocumentsDirectory = await getApplicationDocumentsDirectory();
-    String filePath = '${appDocumentsDirectory.path}/slideData.txt';
-    File file = File(filePath);
+  Future<void> loadSlideData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final todayKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final count = prefs.getInt('slideCount_$todayKey') ?? 0;
+    final checkInStr = prefs.getString('checkIn_$todayKey');
+    final checkOutStr = prefs.getString('checkOut_$todayKey');
 
-    if (file.existsSync()) {
-      List<String> lines = file.readAsLinesSync();
-      if (lines.isNotEmpty) {
-        slideCount = int.tryParse(lines[0]) ?? 0;
-        if (slideCount == 2) {
-          // User has already checked in and checked out for the day
-          setState(() {
-            showSlideBar = false;
-            String? checkInTimeString = lines.length > 1 ? lines[1] : null;
-            String? checkOutTimeString = lines.length > 2 ? lines[2] : null;
-            if (checkInTimeString != null) {
-              checkInTime = DateFormat('HH:mm').parse(checkInTimeString);
-            }
-            if (checkOutTimeString != null) {
-              checkOutTime = DateFormat('HH:mm').parse(checkOutTimeString);
-            }
-          });
-        } else if (slideCount == 1) {
-          // User has checked in but not checked out
-          setState(() {
-            showSlideBar = true;
-            String? checkInTimeString = lines.length > 1 ? lines[1] : null;
-            if (checkInTimeString != null) {
-              checkInTime = DateFormat('HH:mm').parse(checkInTimeString);
-            }
-          });
-        }
+    setState(() {
+      slideCount = count;
+      if (checkInStr != null && checkInStr.isNotEmpty) {
+        checkInTime = DateFormat('HH:mm').parse(checkInStr);
       }
-    }
+      if (checkOutStr != null && checkOutStr.isNotEmpty) {
+        checkOutTime = DateFormat('HH:mm').parse(checkOutStr);
+      }
+      showSlideBar = slideCount < 2;
+    });
   }
 
-  Future<void> saveSlideCount() async {
-    Directory appDocumentsDirectory = await getApplicationDocumentsDirectory();
-    String filePath = '${appDocumentsDirectory.path}/slideData.txt';
-    File file = File(filePath);
+  Future<void> saveSlideData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final todayKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    await prefs.setInt('slideCount_$todayKey', slideCount);
 
-    String checkInTimeString = DateFormat('HH:mm').format(DateTime.now());
-    String checkOutTimeString =
-        checkOutTime != null ? DateFormat('HH:mm').format(checkOutTime!) : '';
-
-    // Write slide count, check-in time, and check-out time to the file
-    await file.writeAsString(
-      '$slideCount\n'
-      '$checkInTimeString\n'
-      '$checkOutTimeString\n',
-      mode: FileMode.write,
-    );
+    if (checkInTime != null) {
+      final checkInStr = DateFormat('HH:mm').format(checkInTime!);
+      await prefs.setString('checkIn_$todayKey', checkInStr);
+    }
+    if (checkOutTime != null) {
+      final checkOutStr = DateFormat('HH:mm').format(checkOutTime!);
+      await prefs.setString('checkOut_$todayKey', checkOutStr);
+    }
 
     if (slideCount == 1 && widget.onCheckIn != null) {
       widget.onCheckIn!();
     } else if (slideCount == 2 && widget.onCheckOut != null) {
       widget.onCheckOut!();
     }
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AttendancePage(
-            checkInTime: checkInTime,
-            checkOutTime: checkOutTime,
-          ),
-        ),
-      );
-    }
+  }
+
+  void handlePunchAction() {
+    setState(() {
+      slideCount++;
+      if (slideCount == 1) {
+        checkInTime = DateTime.now();
+      } else if (slideCount >= 2) {
+        slideCount = 2;
+        checkOutTime = DateTime.now();
+        showSlideBar = false;
+      }
+    });
+    saveSlideData();
   }
 
   @override
   Widget build(BuildContext context) {
-    screenHeight = MediaQuery.of(context).size.height;
-    screenWidth = MediaQuery.of(context).size.width;
-
-    return Container(
-      width: 500,
-      child: Center(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 600),
         child: Scaffold(
+          backgroundColor: const Color(0xfff8fafc),
           body: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Welcome Banner Card
                 Container(
-                  alignment: Alignment.centerLeft,
-                  margin: const EdgeInsets.only(top: 32),
-                  child: Text(
-                    "Welcome",
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: "Schyler",
-                      fontSize: screenWidth / 20,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xff1e293b), Color(0xff0f172a)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Employee", // +User.username,
-                    style: TextStyle(
-                      fontFamily: "Trajan Pro",
-                      fontSize: screenWidth / 18,
-                    ),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  margin: const EdgeInsets.only(top: 12, bottom: 32),
-                  child: Text(
-                    "Today's Status",
-                    style: TextStyle(
-                      fontFamily: "Trajan Pro",
-                      fontSize: screenWidth / 18,
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 150,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 10,
-                        offset: Offset(2, 2),
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
                     ],
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Check In",
-                              style: TextStyle(
-                                fontFamily: "Schyler",
-                                fontSize: screenWidth / 20,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            Text(
-                              checkInTime != null
-                                  ? DateFormat('HH:mm').format(checkInTime!)
-                                  : '--/--',
-                              style: TextStyle(
-                                fontFamily: "Trajan Pro",
-                                fontSize: screenWidth / 18,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ],
-                        ),
+                      CircleAvatar(
+                        radius: 28,
+                        backgroundColor: Colors.blueGrey.shade700,
+                        child: const Icon(Icons.person, color: Colors.white, size: 32),
                       ),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Check Out",
-                              style: TextStyle(
-                                fontFamily: "Schyler",
-                                fontSize: screenWidth / 20,
-                                color: Colors.black54,
+                              "Welcome back,",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white70,
+                                fontSize: 13,
                               ),
                             ),
                             Text(
-                              checkOutTime != null
-                                  ? DateFormat('HH:mm').format(checkOutTime!)
-                                  : '--/--',
-                              style: TextStyle(
-                                fontFamily: "Trajan Pro",
-                                fontSize: screenWidth / 18,
-                                color: Colors.black54,
+                              "Deepanshu Garhkoti",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              "Software Engineer Intern • Engineering",
+                              style: GoogleFonts.poppins(
+                                color: Colors.blue.shade300,
+                                fontSize: 12,
                               ),
                             ),
                           ],
@@ -221,47 +156,149 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
+
+                const SizedBox(height: 20),
+
+                // Today's Status Header
+                Text(
+                  "Today's Attendance Status",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xff1e293b),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Check In / Check Out Card
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xffe2e8f0)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      // Check-In Column
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.login_rounded, size: 18, color: successColor),
+                                const SizedBox(width: 6),
+                                Text(
+                                  "Check In",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xff64748b),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              checkInTime != null
+                                  ? DateFormat('hh:mm a').format(checkInTime!)
+                                  : '--:--',
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: checkInTime != null ? successColor : const Color(0xff94a3b8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 50,
+                        width: 1,
+                        color: const Color(0xffe2e8f0),
+                      ),
+                      // Check-Out Column
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.logout_rounded, size: 18, color: dangerColor),
+                                const SizedBox(width: 6),
+                                Text(
+                                  "Check Out",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xff64748b),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              checkOutTime != null
+                                  ? DateFormat('hh:mm a').format(checkOutTime!)
+                                  : '--:--',
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: checkOutTime != null ? dangerColor : const Color(0xff94a3b8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Real-time Clock Stream
                 StreamBuilder(
                   stream: Stream.periodic(const Duration(seconds: 1)),
                   builder: (context, snapshot) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 12, bottom: 8),
-                      child: Column(
+                    final now = DateTime.now();
+                    return Container(
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xffe2e8f0)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              DateFormat('hh:mm:ss a').format(DateTime.now()),
-                              style: TextStyle(
-                                fontFamily: "Schyler",
-                                fontSize: screenWidth / 20,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: const EdgeInsets.only(top: 4),
-                            child: RichText(
-                              text: TextSpan(
-                                text: currentDate.day.toString(),
-                                style: TextStyle(
-                                  color: primary,
-                                  fontSize: screenWidth / 20,
-                                  fontFamily: "Trajan Pro",
+                          Row(
+                            children: [
+                              const Icon(Icons.access_time_filled, color: Color(0xff3b82f6), size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                DateFormat('hh:mm:ss a').format(now),
+                                style: GoogleFonts.poppins(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xff1e293b),
                                 ),
-                                children: [
-                                  TextSpan(
-                                    text: DateFormat(' MMMM yyyy')
-                                        .format(currentDate),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: screenWidth / 22,
-                                      fontFamily: "Trajan Pro",
-                                    ),
-                                  ),
-                                ],
                               ),
+                            ],
+                          ),
+                          Text(
+                            DateFormat('EEE, dd MMM yyyy').format(now),
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: const Color(0xff64748b),
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -269,73 +306,70 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 ),
-                showSlideBar
-                    ? Container(
-                        margin: const EdgeInsets.only(top: 24),
-                        child: Dismissible(
-                          key: UniqueKey(),
-                          direction: DismissDirection.startToEnd,
-                          background: Container(
-                            color: primary,
-                            alignment: Alignment.centerLeft,
-                            padding: const EdgeInsets.only(left: 20),
-                            child: Icon(
-                              Icons.check,
-                              color: Colors.white,
-                            ),
-                          ),
-                          child: Container(
-                            color: Colors.white,
-                            alignment: Alignment.centerLeft,
-                            padding: EdgeInsets.symmetric(
-                                vertical: 16, horizontal: 20),
-                            child: Text(
-                              slideCount == 0
-                                  ? 'Slide To Check In'
-                                  : 'Slide To Check Out',
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: screenWidth / 20,
-                                fontFamily: 'Schyler',
-                              ),
-                            ),
-                          ),
-                          onDismissed: (direction) {
-                            if (direction == DismissDirection.startToEnd) {
-                              setState(() {
-                                slideCount++;
-                                if (slideCount == 1) {
-                                  checkInTime = DateTime.now();
-                                  if (widget.onCheckIn != null) {
-                                    widget.onCheckIn!();
-                                  }
-                                } else if (slideCount == 2) {
-                                  checkOutTime = DateTime.now();
-                                  showSlideBar = false;
-                                  print('You Have Completed Your Day');
-                                  if (widget.onCheckOut != null) {
-                                    widget.onCheckOut!();
-                                  }
-                                }
-                                saveSlideCount(); // Save slide count and times
-                              });
-                            }
-                          },
+
+                const SizedBox(height: 24),
+
+                // Punch In / Out Interactive Button
+                if (showSlideBar)
+                  SizedBox(
+                    height: 56,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: slideCount == 0 ? accent : dangerColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      )
-                    : Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Text(
-                          'You Have Completed Your Day',
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontSize: screenWidth / 20,
-                            fontFamily: 'Schyler',
-                          ),
+                        elevation: 2,
+                      ),
+                      onPressed: handlePunchAction,
+                      icon: Icon(slideCount == 0 ? Icons.fingerprint : Icons.stop_circle_outlined, size: 24),
+                      label: Text(
+                        slideCount == 0 ? "PUNCH IN NOW" : "PUNCH OUT NOW",
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
                         ),
                       ),
-                ElevatedButton(
+                    ),
+                  )
+                else
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffdcfce7),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xff86efac)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.check_circle, color: Color(0xff166534), size: 22),
+                        const SizedBox(width: 10),
+                        Text(
+                          "You Have Completed Your Day!",
+                          style: GoogleFonts.poppins(
+                            color: const Color(0xff166534),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                const SizedBox(height: 16),
+
+                // View Attendance History Action
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    side: const BorderSide(color: Color(0xffcbd5e1)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -347,7 +381,15 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   },
-                  child: Text('View Attendance'),
+                  icon: const Icon(Icons.calendar_month, color: Color(0xff1e293b)),
+                  label: Text(
+                    "View Detailed Attendance",
+                    style: GoogleFonts.poppins(
+                      color: const Color(0xff1e293b),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ],
             ),

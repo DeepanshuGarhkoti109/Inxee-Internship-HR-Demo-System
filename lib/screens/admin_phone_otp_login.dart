@@ -14,137 +14,148 @@ class AdminPhoneOtpLogin extends StatefulWidget {
 }
 
 class _AdminPhoneOtpLoginState extends State<AdminPhoneOtpLogin> {
+  final TextEditingController _pinController = TextEditingController(text: "1234");
+
+  @override
+  void dispose() {
+    _pinController.dispose();
+    super.dispose();
+  }
+
+  void loginToAdmin() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AdminPanelHomeScreen(),
+      ),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xff0f172a),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
             child: Container(
+              constraints: const BoxConstraints(maxWidth: 440),
               padding: const EdgeInsets.all(32),
-              width: 500,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(
-                    height: 50,
-                  ),
-
-                  //
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'One more step!',
-                        style: GoogleFonts.abhayaLibre(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1,
-                        ),
+                  Center(
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: const Color(0xffeff6ff),
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                    ],
-                  ),
-
-                  //
-                  SizedBox(
-                    height: 5,
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        '2-step verification',
-                        style: GoogleFonts.lato(
-                          fontSize: 18,
-                        ),
+                      child: const Icon(
+                        Icons.security_rounded,
+                        color: Color(0xff3b82f6),
+                        size: 36,
                       ),
-                    ],
+                    ),
                   ),
-
-                  SizedBox(
-                    height: 5,
-                  ),
-
-                  Wrap(
-                    alignment: WrapAlignment.start,
-                    children: [
-                      Text(
-                        "An 4 digit code has been sent to dhdhjdfxhdghdjhdgxhxhdfc",
-                        style: GoogleFonts.lato(
-                          fontSize: 18,
-                        ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: Text(
+                      'Two-Step Verification',
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xff0f172a),
                       ),
-                    ],
+                    ),
                   ),
-
-                  SizedBox(
-                    height: 35,
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      'A 4-digit verification code has been sent to your registered admin device (+91 98*** ***10)',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: const Color(0xff64748b),
+                      ),
+                    ),
                   ),
+                  const SizedBox(height: 32),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Pinput(
-                        length: 4,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        defaultPinTheme: PinTheme(
-                          height: 64,
-                          width: 64,
-                          textStyle: GoogleFonts.urbanist(
-                              fontSize: 30,
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w700),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                color: Colors.black87.withOpacity(1),
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              shape: BoxShape.rectangle),
-                        ),
-                        pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+                  Pinput(
+                    length: 4,
+                    controller: _pinController,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    defaultPinTheme: PinTheme(
+                      height: 56,
+                      width: 56,
+                      textStyle: GoogleFonts.poppins(
+                        fontSize: 22,
+                        color: const Color(0xff0f172a),
+                        fontWeight: FontWeight.w700,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xfff8fafc),
+                        border: Border.all(color: const Color(0xffcbd5e1)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    focusedPinTheme: PinTheme(
+                      height: 56,
+                      width: 56,
+                      textStyle: GoogleFonts.poppins(
+                        fontSize: 22,
+                        color: const Color(0xff0f172a),
+                        fontWeight: FontWeight.w700,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: const Color(0xff3b82f6), width: 2),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
 
-                  SizedBox(
-                    height: 5,
+                  const SizedBox(height: 16),
+
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('OTP resent to your device!')),
+                        );
+                      },
+                      child: Text(
+                        'Resend Code',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xff3b82f6),
+                        ),
+                      ),
+                    ),
                   ),
 
-                  //
+                  const SizedBox(height: 16),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                'Resend Code',
-                                style: GoogleFonts.actor(
-                                  fontSize: 17,
-                                ),
-                              )),
-                        ]),
-                  ),
-
-                  //
                   ButtonInput(
-                    text: 'Login',
-                    onTap: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AdminPanelHomeScreen(),
-                          ),
-                          (route) => false);
-                    },
+                    text: 'VERIFY & ENTER ADMIN PANEL',
+                    onTap: loginToAdmin,
                   ),
                 ],
               ),
