@@ -1,370 +1,306 @@
-// Inxee HR Demo System Application Logic with Local Dummy Dataset
+// Inxee HR OS • Notion Workspace Engine
 
-// Default Dummy Dataset
-const initialDataset = {
+// Dataset Store
+const initialNotionStore = {
+  theme: "light",
+  currentRole: "employee", // 'employee' or 'admin'
+  currentPage: "overview",
+  isClockedIn: false,
+  clockInTime: "09:15 AM",
+  clockOutTime: null,
+  
   employees: [
     {
       id: "EMP001",
       name: "Deepanshu Garhkoti",
       email: "deepanshuGarhkoti@gmail.com",
-      role: "Software Development Engineer Intern",
+      role: "SDE Intern",
       department: "Engineering",
       joinDate: "2024-01-15",
       phone: "+91 98765 43210",
       avatar: "https://images.unsplash.com/photo-1517423738875-5ce310acd3da?auto=format&fit=crop&w=300&q=80",
-      salary: { base: 25000, allowance: 5000, deductions: 1500, net: 28500 }
+      salary: { base: 25000, allowance: 5000, deductions: 1500, net: 28500 },
+      tags: ["Full-Time", "Core Team"]
     },
     {
       id: "EMP002",
       name: "Rahul Sharma",
       email: "rahul.sharma@inxee.com",
-      role: "Frontend Developer",
+      role: "Frontend Engineer",
       department: "Engineering",
       joinDate: "2023-11-01",
       phone: "+91 98123 45678",
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
-      salary: { base: 35000, allowance: 7000, deductions: 2000, net: 40000 }
+      salary: { base: 35000, allowance: 7000, deductions: 2000, net: 40000 },
+      tags: ["Frontend", "UI/UX"]
     },
     {
       id: "EMP003",
       name: "Priya Patel",
       email: "priya.patel@inxee.com",
-      role: "UI/UX Designer",
+      role: "Product Designer",
       department: "Design",
       joinDate: "2024-02-10",
       phone: "+91 99887 76655",
       avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80",
-      salary: { base: 30000, allowance: 6000, deductions: 1800, net: 34200 }
+      salary: { base: 30000, allowance: 6000, deductions: 1800, net: 34200 },
+      tags: ["Design", "Figma"]
+    },
+    {
+      id: "EMP004",
+      name: "Ananya Verma",
+      email: "ananya.verma@inxee.com",
+      role: "Talent Acquisition",
+      department: "Human Resources",
+      joinDate: "2024-03-01",
+      phone: "+91 98000 11223",
+      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80",
+      salary: { base: 32000, allowance: 5000, deductions: 1600, net: 35400 },
+      tags: ["HR", "Operations"]
     }
   ],
+
   attendance: [
-    { date: "2026-08-23", employeeId: "EMP001", checkIn: "09:15 AM", checkOut: "06:30 PM", status: "Present" },
-    { date: "2026-08-22", employeeId: "EMP001", checkIn: "09:02 AM", checkOut: "06:05 PM", status: "Present" },
-    { date: "2026-08-21", employeeId: "EMP001", checkIn: "09:45 AM", checkOut: "06:15 PM", status: "Late" },
-    { date: "2026-08-20", employeeId: "EMP001", checkIn: "09:00 AM", checkOut: "06:00 PM", status: "Present" },
-    { date: "2026-08-23", employeeId: "EMP002", checkIn: "08:55 AM", checkOut: "06:00 PM", status: "Present" }
+    { date: "2026-08-23", employeeId: "EMP001", name: "Deepanshu Garhkoti", checkIn: "09:15 AM", checkOut: "06:30 PM", status: "Present", duration: "9h 15m" },
+    { date: "2026-08-22", employeeId: "EMP001", name: "Deepanshu Garhkoti", checkIn: "09:02 AM", checkOut: "06:05 PM", status: "Present", duration: "9h 03m" },
+    { date: "2026-08-21", employeeId: "EMP001", name: "Deepanshu Garhkoti", checkIn: "09:45 AM", checkOut: "06:15 PM", status: "Late", duration: "8h 30m" },
+    { date: "2026-08-20", employeeId: "EMP001", name: "Deepanshu Garhkoti", checkIn: "09:00 AM", checkOut: "06:00 PM", status: "Present", duration: "9h 00m" },
+    { date: "2026-08-23", employeeId: "EMP002", name: "Rahul Sharma", checkIn: "08:55 AM", checkOut: "06:00 PM", status: "Present", duration: "9h 05m" },
+    { date: "2026-08-23", employeeId: "EMP003", name: "Priya Patel", checkIn: "09:40 AM", checkOut: "06:10 PM", status: "Late", duration: "8h 30m" }
   ],
+
   leaveApplications: [
-    { id: "LV-101", employeeId: "EMP001", employeeName: "Deepanshu Garhkoti", selectedDate: "2026-08-28", range: "Full Day", application: "Family Emergency & Personal Work", status: "Pending" },
-    { id: "LV-100", employeeId: "EMP002", employeeName: "Rahul Sharma", selectedDate: "2026-08-15", range: "Half Day", application: "Doctor Appointment", status: "Approved" },
-    { id: "LV-099", employeeId: "EMP003", employeeName: "Priya Patel", selectedDate: "2026-08-10", range: "Full Day", application: "Sick Leave", status: "Approved" }
+    { id: "LV-101", employeeId: "EMP001", employeeName: "Deepanshu Garhkoti", selectedDate: "2026-08-28", range: "Full Day", title: "Personal Emergency & Errands", application: "Attending family commitment and personal urgent work.", status: "Pending" },
+    { id: "LV-100", employeeId: "EMP002", employeeName: "Rahul Sharma", selectedDate: "2026-08-15", range: "Half Day", title: "Medical Checkup", application: "Routine eye doctor checkup in the afternoon.", status: "Approved" },
+    { id: "LV-099", employeeId: "EMP003", employeeName: "Priya Patel", selectedDate: "2026-08-10", range: "Full Day", title: "Festival Holiday Leave", application: "Traveling home for family festival gathering.", status: "Approved" },
+    { id: "LV-098", employeeId: "EMP004", employeeName: "Ananya Verma", selectedDate: "2026-08-05", range: "Full Day", title: "Personal Leave", application: "Personal day off.", status: "Rejected" }
   ]
 };
 
-// Data Store Setup
+// Storage Helpers
 function getStore() {
-  const store = localStorage.getItem("inxee_hr_store");
-  if (!store) {
-    localStorage.setItem("inxee_hr_store", JSON.stringify(initialDataset));
-    return initialDataset;
+  const data = localStorage.getItem("inxee_notion_hr_store");
+  if (!data) {
+    localStorage.setItem("inxee_notion_hr_store", JSON.stringify(initialNotionStore));
+    return initialNotionStore;
   }
-  return JSON.parse(store);
+  return JSON.parse(data);
 }
 
-function saveStore(data) {
-  localStorage.setItem("inxee_hr_store", JSON.stringify(data));
+function saveStore(store) {
+  localStorage.setItem("inxee_notion_hr_store", JSON.stringify(store));
 }
 
 // App State
-let currentUser = null;
-let currentRole = "employee"; // 'employee' or 'admin'
-let activeScreen = "home";
-let activeTab = "home";
-let isClockedIn = false;
-
-// DOM Elements
-const appContent = document.getElementById("appContent");
-const drawerOverlay = document.getElementById("drawerOverlay");
-const appDrawer = document.getElementById("appDrawer");
-const appTitle = document.getElementById("appTitle");
-const appTabs = document.getElementById("appTabs");
+let store = getStore();
 
 // Initialization
 document.addEventListener("DOMContentLoaded", () => {
-  renderLoginScreen();
+  applyTheme(store.theme || "light");
+  renderSidebar();
+  navigatePage(store.currentPage || "overview");
+
+  // Keyboard shortcut Ctrl+K for search
+  document.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      e.preventDefault();
+      openSearchModal();
+    }
+  });
 });
 
-// Render Login Screen
-function renderLoginScreen(role = "employee") {
-  currentRole = role;
-  appTitle.innerText = role === "admin" ? "A D M I N  L O G I N" : "E M P L O Y E E  L O G I N";
-  appTabs.style.display = "none";
-  
-  appContent.innerHTML = `
-    <div class="login-screen">
-      <div class="login-logo">
-        <i class="fa-solid fa-building-user"></i>
-      </div>
-      <h3 style="margin-bottom: 20px; font-weight: 600;">Inxee HR System</h3>
-      
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" id="loginEmail" class="form-input" value="${role === 'admin' ? 'admin@inxee.com' : 'deepanshuGarhkoti@gmail.com'}">
-      </div>
-      
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="loginPassword" class="form-input" value="password123">
-      </div>
-      
-      <div style="text-align: right; margin-bottom: 20px;">
-        <a href="#" onclick="renderOtpScreen(); return false;" style="font-size: 13px; color: #3b82f6; text-decoration: none;">Forgot / Login with OTP?</a>
-      </div>
-      
-      <button class="btn-primary" onclick="handleLogin('${role}')">LOGIN</button>
-      
-      <div style="margin: 30px 0; position: relative; text-align: center;">
-        <hr style="border: 0; border-top: 1px solid #e2e8f0;">
-        <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #f8fafc; padding: 0 10px; font-size: 12px; color: #64748b;">OR LOGIN AS</span>
-      </div>
-      
-      <button class="btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="renderLoginScreen('${role === 'employee' ? 'admin' : 'employee'}')">
-        <i class="fa-solid ${role === 'employee' ? 'fa-user-shield' : 'fa-user'}"></i> Switch to ${role === 'employee' ? 'Admin Login' : 'Employee Login'}
-      </button>
-    </div>
-  `;
+// Theme Toggle
+function toggleTheme() {
+  const newTheme = store.theme === "dark" ? "light" : "dark";
+  store.theme = newTheme;
+  saveStore(store);
+  applyTheme(newTheme);
 }
 
-function handleLogin(role) {
-  const store = getStore();
-  if (role === "admin") {
-    currentUser = {
-      id: "ADMIN001",
-      name: "Admin User",
-      email: "admin@inxee.com",
-      role: "System Administrator",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80"
-    };
-  } else {
-    currentUser = store.employees[0];
-  }
-  
-  renderMainApp();
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  const themeLabel = document.getElementById("themeToggleLabel");
+  if (themeLabel) themeLabel.innerText = theme === "dark" ? "Light Mode" : "Dark Mode";
 }
 
-function renderOtpScreen() {
-  appContent.innerHTML = `
-    <div class="login-screen">
-      <div class="login-logo"><i class="fa-solid fa-key"></i></div>
-      <h3>OTP Authentication</h3>
-      <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Enter your phone / email to receive high security OTP</p>
-      
-      <div class="form-group">
-        <label>Email or Phone</label>
-        <input type="text" class="form-input" value="+91 98765 43210">
-      </div>
-      
-      <div class="form-group">
-        <label>Enter 4-Digit OTP</label>
-        <input type="text" class="form-input" placeholder="● ● ● ●" value="1234" style="letter-spacing: 8px; text-align: center; font-size: 18px;">
-      </div>
-      
-      <button class="btn-primary" onclick="handleLogin('employee')">VERIFY & CONTINUE</button>
-      <button class="btn-outline" style="width: 100%; margin-top: 12px;" onclick="renderLoginScreen('employee')">Back to Login</button>
-    </div>
-  `;
+// Sidebar Render
+function renderSidebar() {
+  const isAdmin = store.currentRole === "admin";
+  const currentUser = isAdmin 
+    ? { name: "Sarah Jenkins", role: "HR Administrator", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80" }
+    : store.employees[0];
+
+  document.getElementById("sidebarWsTitle").innerText = "Inxee Systems";
+  document.getElementById("sidebarWsSubtitle").innerText = isAdmin ? "Administrator Workspace" : "Employee Workspace";
+  document.getElementById("sidebarUserName").innerText = currentUser.name;
+  document.getElementById("sidebarUserRole").innerText = currentUser.role || (isAdmin ? "Admin" : "Employee");
+  document.getElementById("sidebarUserAvatar").src = currentUser.avatar;
+  document.getElementById("topbarRoleLabel").innerText = isAdmin ? "Switch to Employee View" : "Switch to Admin Mode";
+
+  const pages = [
+    { id: "overview", name: "Overview & Clock", emoji: "⚡" },
+    { id: "attendance", name: "Attendance Database", emoji: "📅" },
+    { id: "leaves", name: "Leave Management", emoji: "🌴", badge: store.leaveApplications.filter(l => l.status === "Pending").length },
+    { id: "salary", name: "Payroll & Compensation", emoji: "💰" },
+    { id: "team", name: "Team Directory", emoji: "👥" },
+    { id: "docs", name: "Docs & Policies", emoji: "📑" },
+    { id: "profile", name: "My Profile", emoji: "👤" }
+  ];
+
+  const navList = document.getElementById("sidebarNavList");
+  navList.innerHTML = pages.map(p => `
+    <li class="sidebar-item ${store.currentPage === p.id ? 'active' : ''}" onclick="navigatePage('${p.id}')">
+      <span class="item-emoji">${p.emoji}</span>
+      <span>${p.name}</span>
+      ${p.badge ? `<span class="item-badge">${p.badge}</span>` : ''}
+    </li>
+  `).join('');
 }
 
-// Render Main App Structure
-function renderMainApp() {
-  appTitle.innerText = currentRole === "admin" ? "A D M I N   P A N E L" : "E M P L O Y E E   P A N E L";
-  appTabs.style.display = "flex";
-  
-  // Setup Drawer Menu Items
-  updateDrawerMenu();
-  switchTab('home');
-}
+// Navigation Handler
+function navigatePage(pageId) {
+  store.currentPage = pageId;
+  saveStore(store);
+  renderSidebar();
 
-function updateDrawerMenu() {
-  const drawerName = document.getElementById("drawerName");
-  const drawerEmail = document.getElementById("drawerEmail");
-  const drawerAvatar = document.getElementById("drawerAvatar");
-  const drawerMenuList = document.getElementById("drawerMenuList");
-  
-  drawerName.innerText = currentUser.name;
-  drawerEmail.innerText = currentUser.email;
-  drawerAvatar.src = currentUser.avatar;
-  
-  if (currentRole === "admin") {
-    drawerMenuList.innerHTML = `
-      <li class="drawer-item active" onclick="switchNavScreen('home')"><i class="fa-solid fa-house"></i> Home</li>
-      <li class="drawer-item" onclick="switchNavScreen('salary_admin')"><i class="fa-solid fa-money-bill-wave"></i> Salary Details</li>
-      <li class="drawer-item" onclick="switchNavScreen('leave_admin')"><i class="fa-solid fa-calendar-check"></i> Leave Requests</li>
-      <li class="drawer-item" onclick="switchNavScreen('checkin_admin')"><i class="fa-solid fa-clipboard-user"></i> Check-in Details</li>
-      <li class="drawer-item" onclick="switchNavScreen('employees_admin')"><i class="fa-solid fa-users"></i> Employee Details</li>
-      <li class="drawer-item" onclick="switchNavScreen('report')"><i class="fa-solid fa-flag"></i> Reports</li>
-      <li class="drawer-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</li>
-    `;
-  } else {
-    drawerMenuList.innerHTML = `
-      <li class="drawer-item active" onclick="switchNavScreen('home')"><i class="fa-solid fa-house"></i> Home</li>
-      <li class="drawer-item" onclick="switchNavScreen('apply_leave')"><i class="fa-solid fa-calendar-plus"></i> Apply Leave</li>
-      <li class="drawer-item" onclick="switchNavScreen('salary_emp')"><i class="fa-solid fa-file-invoice-dollar"></i> Salary Details</li>
-      <li class="drawer-item" onclick="switchNavScreen('profile')"><i class="fa-solid fa-user"></i> Profile</li>
-      <li class="drawer-item" onclick="switchNavScreen('report')"><i class="fa-solid fa-circle-question"></i> Help & Support</li>
-      <li class="drawer-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</li>
-    `;
-  }
-}
+  const canvas = document.getElementById("notionCanvas");
+  const topbarTitle = document.getElementById("topbarPageTitle");
 
-function toggleDrawer() {
-  drawerOverlay.classList.toggle("active");
-  appDrawer.classList.toggle("open");
-}
-
-function switchTab(tab) {
-  activeTab = tab;
-  document.getElementById("tabHome").classList.toggle("active", tab === "home");
-  document.getElementById("tabAttendance").classList.toggle("active", tab === "attendance");
-  
-  if (tab === "home") {
-    renderHomeScreen();
-  } else {
-    renderAttendanceScreen();
-  }
-}
-
-function switchNavScreen(screen) {
-  toggleDrawer();
-  activeScreen = screen;
-  
-  switch(screen) {
-    case "home":
-      switchTab("home");
+  switch(pageId) {
+    case "overview":
+      topbarTitle.innerText = "Overview & Clock";
+      renderOverviewPage(canvas);
       break;
-    case "apply_leave":
-      renderApplyLeaveScreen();
+    case "attendance":
+      topbarTitle.innerText = "Attendance Database";
+      renderAttendancePage(canvas);
       break;
-    case "salary_emp":
-      renderEmployeeSalaryScreen();
+    case "leaves":
+      topbarTitle.innerText = "Leave Management";
+      renderLeavesPage(canvas);
       break;
-    case "salary_admin":
-      renderAdminSalaryScreen();
+    case "salary":
+      topbarTitle.innerText = "Payroll & Compensation";
+      renderSalaryPage(canvas);
       break;
-    case "leave_admin":
-      renderAdminLeaveScreen();
+    case "team":
+      topbarTitle.innerText = "Team Directory";
+      renderTeamPage(canvas);
       break;
-    case "checkin_admin":
-      renderCheckInDetailsScreen();
-      break;
-    case "employees_admin":
-      renderEmployeesAdminScreen();
+    case "docs":
+      topbarTitle.innerText = "Docs & Policies";
+      renderDocsPage(canvas);
       break;
     case "profile":
-      renderProfileScreen();
-      break;
-    case "report":
-      renderReportScreen();
+      topbarTitle.innerText = "My Profile";
+      renderProfilePage(canvas);
       break;
   }
 }
 
-// ----------------- SCREENS ----------------- //
-
-function renderHomeScreen() {
-  const store = getStore();
-  const today = new Date().toISOString().split('T')[0];
-  const userTodayAttendance = store.attendance.find(a => a.employeeId === currentUser.id && a.date === today);
-  
-  appContent.innerHTML = `
-    <div class="card" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="${currentUser.avatar}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
-        <div>
-          <h3 style="font-size: 16px; font-weight: 600;">Welcome back, ${currentUser.name.split(' ')[0]}!</h3>
-          <p style="font-size: 12px; color: #94a3b8;">${currentUser.role || 'Employee'}</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="card clock-widget">
-      <p style="font-size: 13px; color: var(--text-muted); font-weight: 500;">TODAY'S ATTENDANCE</p>
-      <h2 style="font-size: 26px; font-weight: 700; margin: 6px 0;">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</h2>
-      <p style="font-size: 12px; color: #64748b;">${new Date().toLocaleDateString(undefined, {weekday: 'long', month: 'short', day: 'numeric'})}</p>
-      
-      <button class="clock-btn ${isClockedIn ? 'clocked-in' : ''}" onclick="toggleClockIn()">
-        <i class="fa-solid ${isClockedIn ? 'fa-stopwatch' : 'fa-fingerprint'}" style="font-size: 28px;"></i>
-        <span>${isClockedIn ? 'PUNCH OUT' : 'PUNCH IN'}</span>
-      </button>
-      
-      <div style="display: flex; justify-content: space-around; margin-top: 12px; font-size: 13px;">
-        <div>
-          <span style="color: var(--text-muted); display: block; font-size: 11px;">PUNCH IN</span>
-          <strong>${userTodayAttendance ? userTodayAttendance.checkIn : (isClockedIn ? '09:15 AM' : '--:--')}</strong>
-        </div>
-        <div>
-          <span style="color: var(--text-muted); display: block; font-size: 11px;">PUNCH OUT</span>
-          <strong>${userTodayAttendance && userTodayAttendance.checkOut ? userTodayAttendance.checkOut : '--:--'}</strong>
-        </div>
-      </div>
-    </div>
-    
-    <div class="card">
-      <div class="card-title"><i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Quick Services</div>
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; font-size: 12px;">
-        <div style="padding: 12px; background: #f1f5f9; border-radius: 8px; cursor: pointer;" onclick="switchNavScreen('apply_leave')">
-          <i class="fa-solid fa-calendar-plus" style="font-size: 20px; color: #3b82f6; display: block; margin-bottom: 6px;"></i>
-          Apply Leave
-        </div>
-        <div style="padding: 12px; background: #f1f5f9; border-radius: 8px; cursor: pointer;" onclick="switchNavScreen('salary_emp')">
-          <i class="fa-solid fa-wallet" style="font-size: 20px; color: #10b981; display: block; margin-bottom: 6px;"></i>
-          Payslip
-        </div>
-        <div style="padding: 12px; background: #f1f5f9; border-radius: 8px; cursor: pointer;" onclick="switchNavScreen('profile')">
-          <i class="fa-solid fa-id-card" style="font-size: 20px; color: #8b5cf6; display: block; margin-bottom: 6px;"></i>
-          Profile
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function toggleClockIn() {
-  isClockedIn = !isClockedIn;
-  const store = getStore();
-  const today = new Date().toISOString().split('T')[0];
-  
-  if (isClockedIn) {
-    store.attendance.unshift({
-      date: today,
-      employeeId: currentUser.id,
-      checkIn: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-      checkOut: null,
-      status: "Present"
-    });
-  } else {
-    const item = store.attendance.find(a => a.employeeId === currentUser.id && a.date === today);
-    if (item) {
-      item.checkOut = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    }
-  }
+function switchRoleToggle() {
+  store.currentRole = store.currentRole === "admin" ? "employee" : "admin";
   saveStore(store);
-  renderHomeScreen();
+  renderSidebar();
+  navigatePage(store.currentPage);
 }
 
-function renderAttendanceScreen() {
-  const store = getStore();
-  const records = store.attendance.filter(a => currentRole === 'admin' || a.employeeId === currentUser.id);
-  
-  appContent.innerHTML = `
-    <div class="card">
-      <div class="card-title"><i class="fa-solid fa-calendar-days"></i> Attendance History</div>
-      <table class="data-table">
+function toggleSidebar() {
+  const sidebar = document.getElementById("notionSidebar");
+  const expandBtn = document.getElementById("sidebarExpandBtn");
+  sidebar.classList.toggle("collapsed");
+  expandBtn.style.display = sidebar.classList.contains("collapsed") ? "inline-flex" : "none";
+}
+
+// -------------------------------------------------------------
+// 1. OVERVIEW & PUNCH CLOCK PAGE (NOTION STYLE)
+// -------------------------------------------------------------
+function renderOverviewPage(container) {
+  const now = new Date();
+  const todayStr = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  container.innerHTML = `
+    <div class="page-icon">⚡</div>
+    <h1 class="page-title">Workforce & Attendance Operating System</h1>
+
+    <!-- Notion Properties Block -->
+    <div class="properties-grid">
+      <div class="prop-label"><i class="fa-regular fa-building"></i> Workspace</div>
+      <div class="prop-value"><strong>Inxee Engineering HQ</strong></div>
+
+      <div class="prop-label"><i class="fa-regular fa-user"></i> Active User</div>
+      <div class="prop-value">
+        <span class="tag tag-blue">${store.currentRole === 'admin' ? 'Sarah Jenkins (Admin)' : 'Deepanshu Garhkoti (SDE Intern)'}</span>
+      </div>
+
+      <div class="prop-label"><i class="fa-regular fa-calendar"></i> Today's Date</div>
+      <div class="prop-value">${todayStr}</div>
+
+      <div class="prop-label"><i class="fa-solid fa-signal"></i> System Status</div>
+      <div class="prop-value"><span class="tag tag-green">● Online & Operational</span></div>
+    </div>
+
+    <!-- Live Punch Clock Banner -->
+    <div class="clock-banner">
+      <div>
+        <div style="font-size: 12px; color: var(--notion-text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Live Punch Clock</div>
+        <div class="clock-live-time">${timeStr}</div>
+        <div style="font-size: 13px; color: var(--notion-text-subtle); margin-top: 4px;">
+          Status: <strong style="color: ${store.isClockedIn ? 'var(--notion-green)' : 'var(--notion-text-muted)'};">${store.isClockedIn ? 'Checked In (09:15 AM)' : 'Not Punched In'}</strong>
+        </div>
+      </div>
+      <div>
+        <button class="notion-btn" style="padding: 10px 18px; font-size: 14px; background: ${store.isClockedIn ? 'var(--notion-red)' : 'var(--notion-blue)'};" onclick="toggleClockInOut()">
+          <i class="fa-solid ${store.isClockedIn ? 'fa-stopwatch' : 'fa-fingerprint'}"></i>
+          <span>${store.isClockedIn ? 'PUNCH OUT' : 'PUNCH IN NOW'}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Notion Callout Block -->
+    <div class="notion-callout-box">
+      <div class="callout-icon">💡</div>
+      <div class="callout-content">
+        <div class="callout-title">Quick Action Navigation</div>
+        <div class="callout-desc">
+          Use the left sidebar or the buttons below to log attendance, review leave requests, or audit payroll disbursements.
+        </div>
+        <div style="margin-top: 10px; display: flex; gap: 8px;">
+          <button class="notion-btn-outline" onclick="navigatePage('leaves')"><i class="fa-solid fa-calendar-plus"></i> Apply Leave</button>
+          <button class="notion-btn-outline" onclick="navigatePage('salary')"><i class="fa-solid fa-wallet"></i> View Payslip</button>
+          <button class="notion-btn-outline" onclick="navigatePage('team')"><i class="fa-solid fa-users"></i> Team Directory</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Attendance Database View -->
+    <div class="db-header">
+      <div class="db-title"><i class="fa-regular fa-calendar-check"></i> Recent Attendance Records</div>
+      <button class="notion-btn-outline" onclick="navigatePage('attendance')">View All Database Rows →</button>
+    </div>
+
+    <div class="notion-table-wrap">
+      <table class="notion-table">
         <thead>
           <tr>
             <th>Date</th>
+            <th>Employee</th>
             <th>Check In</th>
             <th>Check Out</th>
+            <th>Duration</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
-          ${records.map(r => `
+          ${store.attendance.slice(0, 4).map(r => `
             <tr>
-              <td>${r.date}</td>
+              <td><span style="font-family: 'JetBrains Mono', monospace;">${r.date}</span></td>
+              <td><strong>${r.name}</strong></td>
               <td>${r.checkIn || '--'}</td>
               <td>${r.checkOut || '--'}</td>
-              <td><span class="badge ${r.status === 'Present' ? 'badge-success' : 'badge-warning'}">${r.status}</span></td>
+              <td>${r.duration || '--'}</td>
+              <td><span class="tag ${r.status === 'Present' ? 'tag-green' : 'tag-yellow'}">${r.status}</span></td>
             </tr>
           `).join('')}
         </tbody>
@@ -373,161 +309,315 @@ function renderAttendanceScreen() {
   `;
 }
 
-function renderApplyLeaveScreen() {
-  appContent.innerHTML = `
-    <div class="card">
-      <div class="card-title"><i class="fa-solid fa-paper-plane"></i> Apply for Leave</div>
-      
-      <div class="form-group">
-        <label>Selected Date</label>
-        <input type="date" id="leaveDate" class="form-input" value="${new Date().toISOString().split('T')[0]}">
-      </div>
-      
-      <div class="form-group">
-        <label>Duration / Range</label>
-        <select id="leaveRange" class="form-input">
-          <option value="Full Day">Full Day</option>
-          <option value="First Half">First Half</option>
-          <option value="Second Half">Second Half</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label>Application / Reason</label>
-        <textarea id="leaveReason" class="form-input" rows="3" placeholder="Enter reason for leave..."></textarea>
-      </div>
-      
-      <button class="btn-primary" onclick="submitLeaveApplication()">SUBMIT LEAVE</button>
-    </div>
-    
-    <div class="card">
-      <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> My Leave Applications</div>
-      <div id="myLeaveList"></div>
-    </div>
-  `;
-  renderMyLeaves();
-}
+function toggleClockInOut() {
+  store.isClockedIn = !store.isClockedIn;
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toISOString().split('T')[0];
 
-function submitLeaveApplication() {
-  const date = document.getElementById("leaveDate").value;
-  const range = document.getElementById("leaveRange").value;
-  const reason = document.getElementById("leaveReason").value;
-  
-  if (!reason) {
-    alert("Please provide a reason for the leave application.");
-    return;
+  if (store.isClockedIn) {
+    store.attendance.unshift({
+      date: dateStr,
+      employeeId: "EMP001",
+      name: "Deepanshu Garhkoti",
+      checkIn: timeStr,
+      checkOut: null,
+      status: "Present",
+      duration: "In Progress"
+    });
+  } else {
+    const todayLog = store.attendance.find(a => a.employeeId === "EMP001" && a.date === dateStr);
+    if (todayLog) {
+      todayLog.checkOut = timeStr;
+      todayLog.duration = "8h 45m";
+    }
   }
-  
-  const store = getStore();
-  store.leaveApplications.unshift({
-    id: "LV-" + Math.floor(100 + Math.random() * 900),
-    employeeId: currentUser.id,
-    employeeName: currentUser.name,
-    selectedDate: date,
-    range: range,
-    application: reason,
-    status: "Pending"
-  });
   saveStore(store);
-  renderApplyLeaveScreen();
+  renderOverviewPage(document.getElementById("notionCanvas"));
 }
 
-function renderMyLeaves() {
-  const store = getStore();
-  const leaves = store.leaveApplications.filter(l => l.employeeId === currentUser.id);
-  const container = document.getElementById("myLeaveList");
-  
-  if (leaves.length === 0) {
-    container.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">No leave applications found.</p>`;
-    return;
-  }
-  
-  container.innerHTML = leaves.map(l => `
-    <div style="padding: 10px; border-bottom: 1px solid var(--border); font-size: 13px;">
-      <div style="display: flex; justify-content: space-between; font-weight: 600;">
-        <span>${l.selectedDate} (${l.range})</span>
-        <span class="badge ${l.status === 'Approved' ? 'badge-success' : (l.status === 'Rejected' ? 'badge-danger' : 'badge-warning')}">${l.status}</span>
+// -------------------------------------------------------------
+// 2. ATTENDANCE DATABASE PAGE (NOTION TABLE VIEW)
+// -------------------------------------------------------------
+function renderAttendancePage(container) {
+  container.innerHTML = `
+    <div class="page-icon">📅</div>
+    <h1 class="page-title">Attendance Database</h1>
+
+    <div class="properties-grid">
+      <div class="prop-label"><i class="fa-solid fa-database"></i> Database</div>
+      <div class="prop-value">Workforce Time & Attendance Ledger</div>
+      <div class="prop-label"><i class="fa-solid fa-filter"></i> Total Logs</div>
+      <div class="prop-value"><strong>${store.attendance.length} Records</strong></div>
+    </div>
+
+    <!-- Database Toolbar & Tabs -->
+    <div class="db-views">
+      <button class="db-tab active"><i class="fa-solid fa-table-list"></i> All Records (${store.attendance.length})</button>
+      <button class="db-tab" onclick="alert('Filtering to Present records')"><i class="fa-solid fa-circle-check"></i> Present</button>
+      <button class="db-tab" onclick="alert('Filtering to Late records')"><i class="fa-solid fa-clock"></i> Exceptions</button>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <div style="display: flex; gap: 8px;">
+        <input type="text" class="notion-input" placeholder="Search by name or date..." style="width: 240px;" oninput="filterAttendanceTable(this.value)">
       </div>
-      <p style="color: var(--text-muted); margin-top: 4px;">${l.application}</p>
+      <button class="notion-btn" onclick="openAddAttendanceModal()"><i class="fa-solid fa-plus"></i> Add Log Row</button>
     </div>
-  `).join('');
-}
 
-function renderEmployeeSalaryScreen() {
-  const sal = currentUser.salary || { base: 25000, allowance: 5000, deductions: 1500, net: 28500 };
-  
-  appContent.innerHTML = `
-    <div class="card" style="background: linear-gradient(135deg, #10b981, #047857); color: white;">
-      <p style="font-size: 12px; opacity: 0.9;">NET PAYABLE SALARY (MONTHLY)</p>
-      <h2 style="font-size: 32px; font-weight: 700; margin: 8px 0;">₹${sal.net.toLocaleString()}</h2>
-      <p style="font-size: 12px; opacity: 0.9;"><i class="fa-solid fa-circle-check"></i> Status: Disbursed</p>
-    </div>
-    
-    <div class="card">
-      <div class="card-title"><i class="fa-solid fa-list-check"></i> Salary Breakdown</div>
-      <table class="data-table">
-        <tr><td>Basic Salary</td><td style="text-align: right; font-weight: 600;">₹${sal.base.toLocaleString()}</td></tr>
-        <tr><td>Allowances & HRA</td><td style="text-align: right; font-weight: 600;">+ ₹${sal.allowance.toLocaleString()}</td></tr>
-        <tr><td>Deductions (PF/TDS)</td><td style="text-align: right; font-weight: 600; color: #ef4444;">- ₹${sal.deductions.toLocaleString()}</td></tr>
-        <tr style="border-top: 2px solid var(--border);">
-          <td style="font-weight: 700;">Net Salary</td>
-          <td style="text-align: right; font-weight: 700; color: #10b981;">₹${sal.net.toLocaleString()}</td>
-        </tr>
+    <!-- Notion Data Table -->
+    <div class="notion-table-wrap">
+      <table class="notion-table" id="attendanceTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Employee</th>
+            <th>Department</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceTbody">
+          ${store.attendance.map(r => `
+            <tr>
+              <td><span style="font-family: 'JetBrains Mono', monospace;">${r.date}</span></td>
+              <td><strong>${r.name}</strong></td>
+              <td><span class="tag tag-gray">Engineering</span></td>
+              <td>${r.checkIn || '--'}</td>
+              <td>${r.checkOut || '--'}</td>
+              <td><span class="tag ${r.status === 'Present' ? 'tag-green' : 'tag-yellow'}">${r.status}</span></td>
+            </tr>
+          `).join('')}
+        </tbody>
       </table>
     </div>
   `;
 }
 
-function renderAdminLeaveScreen() {
-  const store = getStore();
-  
-  appContent.innerHTML = `
-    <div class="card">
-      <div class="card-title"><i class="fa-solid fa-envelope-open-text"></i> Leave Requests Management</div>
-      ${store.leaveApplications.length === 0 ? '<p>No pending leave requests.</p>' : ''}
-      ${store.leaveApplications.map((l, index) => `
-        <div style="padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; font-size: 13px;">
-          <div style="display: flex; justify-content: space-between; font-weight: 600;">
-            <span>${l.employeeName}</span>
-            <span class="badge ${l.status === 'Approved' ? 'badge-success' : (l.status === 'Rejected' ? 'badge-danger' : 'badge-warning')}">${l.status}</span>
-          </div>
-          <p style="margin: 4px 0;"><strong>Date:</strong> ${l.selectedDate} (${l.range})</p>
-          <p style="color: var(--text-muted); margin-bottom: 8px;">"${l.application}"</p>
-          
-          ${l.status === 'Pending' ? `
-            <div style="display: flex; gap: 8px; margin-top: 8px;">
-              <button onclick="updateLeaveStatus(${index}, 'Approved')" style="flex: 1; padding: 6px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Approve</button>
-              <button onclick="updateLeaveStatus(${index}, 'Rejected')" style="flex: 1; padding: 6px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Reject</button>
-            </div>
-          ` : ''}
+function filterAttendanceTable(query) {
+  const rows = document.querySelectorAll("#attendanceTbody tr");
+  rows.forEach(r => {
+    const text = r.innerText.toLowerCase();
+    r.style.display = text.includes(query.toLowerCase()) ? "" : "none";
+  });
+}
+
+// -------------------------------------------------------------
+// 3. LEAVE MANAGEMENT PAGE (NOTION KANBAN & TABLE)
+// -------------------------------------------------------------
+function renderLeavesPage(container) {
+  const pending = store.leaveApplications.filter(l => l.status === "Pending");
+  const approved = store.leaveApplications.filter(l => l.status === "Approved");
+  const rejected = store.leaveApplications.filter(l => l.status === "Rejected");
+
+  container.innerHTML = `
+    <div class="page-icon">🌴</div>
+    <h1 class="page-title">Leave Applications & Approval</h1>
+
+    <div class="properties-grid">
+      <div class="prop-label"><i class="fa-regular fa-clock"></i> Pending Review</div>
+      <div class="prop-value"><span class="tag tag-yellow">${pending.length} Pending Approval</span></div>
+      <div class="prop-label"><i class="fa-regular fa-circle-check"></i> Approved Total</div>
+      <div class="prop-value"><span class="tag tag-green">${approved.length} Approved</span></div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div class="db-views" style="margin-bottom: 0;">
+        <button class="db-tab active"><i class="fa-solid fa-border-all"></i> Kanban Board View</button>
+      </div>
+      <button class="notion-btn" onclick="openApplyLeaveModal()"><i class="fa-solid fa-plus"></i> Apply for Leave</button>
+    </div>
+
+    <!-- Notion Kanban Board -->
+    <div class="kanban-grid">
+      
+      <!-- Pending Column -->
+      <div class="kanban-col">
+        <div class="kanban-col-header">
+          <span><span class="tag tag-yellow">⏳ Pending</span></span>
+          <span style="font-size: 12px; color: var(--notion-text-subtle);">${pending.length}</span>
         </div>
-      `).join('')}
+        ${pending.map((l, idx) => `
+          <div class="kanban-card">
+            <div style="font-weight: 600; font-size: 13.5px; margin-bottom: 4px;">${l.title}</div>
+            <div style="font-size: 12px; color: var(--notion-text-muted); margin-bottom: 8px;">${l.application}</div>
+            <div style="font-size: 11.5px; color: var(--notion-text-subtle); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--notion-border-subtle); padding-top: 6px;">
+              <span>👤 ${l.employeeName}</span>
+              <span class="tag tag-gray">${l.selectedDate}</span>
+            </div>
+            ${store.currentRole === 'admin' ? `
+              <div style="display: flex; gap: 6px; margin-top: 10px;">
+                <button class="notion-btn" style="flex: 1; padding: 4px 8px; font-size: 11px; background: var(--notion-green);" onclick="updateLeaveStatus('${l.id}', 'Approved')">Approve</button>
+                <button class="notion-btn-outline" style="flex: 1; padding: 4px 8px; font-size: 11px; color: var(--notion-red);" onclick="updateLeaveStatus('${l.id}', 'Rejected')">Reject</button>
+              </div>
+            ` : ''}
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Approved Column -->
+      <div class="kanban-col">
+        <div class="kanban-col-header">
+          <span><span class="tag tag-green">✅ Approved</span></span>
+          <span style="font-size: 12px; color: var(--notion-text-subtle);">${approved.length}</span>
+        </div>
+        ${approved.map(l => `
+          <div class="kanban-card">
+            <div style="font-weight: 600; font-size: 13.5px; margin-bottom: 4px;">${l.title}</div>
+            <div style="font-size: 12px; color: var(--notion-text-muted); margin-bottom: 8px;">${l.application}</div>
+            <div style="font-size: 11.5px; color: var(--notion-text-subtle); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--notion-border-subtle); padding-top: 6px;">
+              <span>👤 ${l.employeeName}</span>
+              <span class="tag tag-green">${l.selectedDate}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Rejected Column -->
+      <div class="kanban-col">
+        <div class="kanban-col-header">
+          <span><span class="tag tag-red">❌ Rejected</span></span>
+          <span style="font-size: 12px; color: var(--notion-text-subtle);">${rejected.length}</span>
+        </div>
+        ${rejected.map(l => `
+          <div class="kanban-card">
+            <div style="font-weight: 600; font-size: 13.5px; margin-bottom: 4px;">${l.title}</div>
+            <div style="font-size: 12px; color: var(--notion-text-muted); margin-bottom: 8px;">${l.application}</div>
+            <div style="font-size: 11.5px; color: var(--notion-text-subtle); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--notion-border-subtle); padding-top: 6px;">
+              <span>👤 ${l.employeeName}</span>
+              <span class="tag tag-red">${l.selectedDate}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
     </div>
   `;
 }
 
-function updateLeaveStatus(index, status) {
-  const store = getStore();
-  store.leaveApplications[index].status = status;
-  saveStore(store);
-  renderAdminLeaveScreen();
+function updateLeaveStatus(id, newStatus) {
+  const item = store.leaveApplications.find(l => l.id === id);
+  if (item) {
+    item.status = newStatus;
+    saveStore(store);
+    renderLeavesPage(document.getElementById("notionCanvas"));
+    renderSidebar();
+  }
 }
 
-function renderEmployeesAdminScreen() {
-  const store = getStore();
-  
-  appContent.innerHTML = `
-    <div class="card">
-      <div class="card-title" style="justify-content: space-between;">
-        <span><i class="fa-solid fa-users"></i> Employee Directory</span>
-        <button onclick="addNewEmployeePrompt()" style="padding: 6px 10px; background: #000; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">+ Add Employee</button>
+// -------------------------------------------------------------
+// 4. PAYROLL & COMPENSATION PAGE (NOTION FORMAT)
+// -------------------------------------------------------------
+function renderSalaryPage(container) {
+  const emp = store.employees[0];
+  const sal = emp.salary;
+
+  container.innerHTML = `
+    <div class="page-icon">💰</div>
+    <h1 class="page-title">Payroll & Compensation Matrix</h1>
+
+    <div class="properties-grid">
+      <div class="prop-label"><i class="fa-regular fa-credit-card"></i> Disbursement</div>
+      <div class="prop-value"><span class="tag tag-green">Monthly (Auto-Disbursed)</span></div>
+      <div class="prop-label"><i class="fa-solid fa-indian-rupee-sign"></i> Current Net Pay</div>
+      <div class="prop-value"><strong>₹${sal.net.toLocaleString()} / month</strong></div>
+    </div>
+
+    <!-- Payslip Callout Block -->
+    <div class="notion-callout-box" style="border-left: 3px solid var(--notion-green);">
+      <div class="callout-icon">💵</div>
+      <div class="callout-content">
+        <div class="callout-title">Digital Payslip Breakdown • August 2026</div>
+        <div class="callout-desc">Verified by Inxee Finance & Payroll Engine. Download official slip anytime.</div>
+        <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; font-size: 13px;">
+          <div>
+            <div style="color: var(--notion-text-subtle); font-size: 11px;">BASIC PAY</div>
+            <div style="font-weight: 600; font-size: 16px;">₹${sal.base.toLocaleString()}</div>
+          </div>
+          <div>
+            <div style="color: var(--notion-text-subtle); font-size: 11px;">HRA & ALLOWANCES</div>
+            <div style="font-weight: 600; font-size: 16px; color: var(--notion-green);">+ ₹${sal.allowance.toLocaleString()}</div>
+          </div>
+          <div>
+            <div style="color: var(--notion-text-subtle); font-size: 11px;">DEDUCTIONS (PF/TAX)</div>
+            <div style="font-weight: 600; font-size: 16px; color: var(--notion-red);">- ₹${sal.deductions.toLocaleString()}</div>
+          </div>
+          <div>
+            <div style="color: var(--notion-text-subtle); font-size: 11px;">NET PAYABLE</div>
+            <div style="font-weight: 700; font-size: 18px; color: var(--notion-blue);">₹${sal.net.toLocaleString()}</div>
+          </div>
+        </div>
       </div>
-      <table class="data-table">
+    </div>
+
+    <!-- Company Payroll Database Table -->
+    <div class="db-header">
+      <div class="db-title"><i class="fa-solid fa-money-check-dollar"></i> Workforce Compensation Ledger</div>
+      <button class="notion-btn-outline" onclick="alert('Exporting Payroll Ledger...')"><i class="fa-solid fa-file-excel"></i> Export Matrix</button>
+    </div>
+
+    <div class="notion-table-wrap">
+      <table class="notion-table">
         <thead>
           <tr>
             <th>Employee</th>
-            <th>Department</th>
             <th>Role</th>
+            <th>Base Salary</th>
+            <th>Allowances</th>
+            <th>Deductions</th>
+            <th>Net Monthly Payout</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${store.employees.map(e => `
+            <tr>
+              <td><strong>${e.name}</strong> <span style="font-size: 11px; color: var(--notion-text-subtle);">(${e.id})</span></td>
+              <td><span class="tag tag-blue">${e.role}</span></td>
+              <td>₹${e.salary.base.toLocaleString()}</td>
+              <td>+ ₹${e.salary.allowance.toLocaleString()}</td>
+              <td style="color: var(--notion-red);">- ₹${e.salary.deductions.toLocaleString()}</td>
+              <td><strong>₹${e.salary.net.toLocaleString()}</strong></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// 5. TEAM DIRECTORY PAGE (NOTION GALLERY & TABLE)
+// -------------------------------------------------------------
+function renderTeamPage(container) {
+  container.innerHTML = `
+    <div class="page-icon">👥</div>
+    <h1 class="page-title">Team Directory & Workforce</h1>
+
+    <div class="properties-grid">
+      <div class="prop-label"><i class="fa-solid fa-users"></i> Headcount</div>
+      <div class="prop-value"><strong>${store.employees.length} Active Team Members</strong></div>
+      <div class="prop-label"><i class="fa-solid fa-building"></i> Departments</div>
+      <div class="prop-value"><span class="tag tag-gray">Engineering</span> <span class="tag tag-gray">Design</span> <span class="tag tag-gray">Human Resources</span></div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div class="db-views" style="margin-bottom: 0;">
+        <button class="db-tab active"><i class="fa-solid fa-table"></i> Table Directory</button>
+      </div>
+      <button class="notion-btn" onclick="openAddMemberModal()"><i class="fa-solid fa-user-plus"></i> Add Team Member</button>
+    </div>
+
+    <div class="notion-table-wrap">
+      <table class="notion-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Designation</th>
+            <th>Department</th>
+            <th>Email</th>
+            <th>Join Date</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -535,15 +625,15 @@ function renderEmployeesAdminScreen() {
             <tr>
               <td>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <img src="${e.avatar}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
-                  <div>
-                    <strong>${e.name}</strong><br>
-                    <span style="font-size: 11px; color: var(--text-muted);">${e.id}</span>
-                  </div>
+                  <img src="${e.avatar}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                  <strong>${e.name}</strong>
                 </div>
               </td>
-              <td>${e.department}</td>
-              <td>${e.role}</td>
+              <td><span class="tag tag-blue">${e.role}</span></td>
+              <td><span class="tag tag-gray">${e.department}</span></td>
+              <td><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">${e.email}</span></td>
+              <td>${e.joinDate}</td>
+              <td><span class="tag tag-green">Active</span></td>
             </tr>
           `).join('')}
         </tbody>
@@ -552,106 +642,257 @@ function renderEmployeesAdminScreen() {
   `;
 }
 
-function addNewEmployeePrompt() {
-  const name = prompt("Enter Employee Name:");
+// -------------------------------------------------------------
+// 6. DOCS & POLICIES PAGE (NOTION WIKI FORMAT)
+// -------------------------------------------------------------
+function renderDocsPage(container) {
+  container.innerHTML = `
+    <div class="page-icon">📑</div>
+    <h1 class="page-title">Company Policies & HR Wiki</h1>
+
+    <div class="properties-grid">
+      <div class="prop-label"><i class="fa-solid fa-shield-halved"></i> Governance</div>
+      <div class="prop-value">Inxee Employee Handbook v2.4</div>
+      <div class="prop-label"><i class="fa-solid fa-clock-rotate-left"></i> Last Revision</div>
+      <div class="prop-value">August 2026</div>
+    </div>
+
+    <div class="notion-callout-box">
+      <div class="callout-icon">📌</div>
+      <div class="callout-content">
+        <div class="callout-title">Core Operating Guidelines</div>
+        <div class="callout-desc">
+          Core working hours are 09:00 AM - 06:00 PM IST. Please submit all planned leave applications at least 2 business days in advance.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px;">
+      <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">📜 Standard Operating Procedures</h3>
+      
+      <div style="border: 1px solid var(--notion-border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; background: var(--notion-card);">
+        <strong>1. Daily Attendance Logging</strong>
+        <p style="font-size: 13px; color: var(--notion-text-muted); margin-top: 4px;">
+          All team members must punch in via the Inxee OS portal or mobile app upon starting shifts.
+        </p>
+      </div>
+
+      <div style="border: 1px solid var(--notion-border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; background: var(--notion-card);">
+        <strong>2. Paid Time Off (PTO) & Sick Leaves</strong>
+        <p style="font-size: 13px; color: var(--notion-text-muted); margin-top: 4px;">
+          Full-time and intern staff receive 18 days of paid annual leaves plus emergency medical allocations.
+        </p>
+      </div>
+
+      <div style="border: 1px solid var(--notion-border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; background: var(--notion-card);">
+        <strong>3. Salary Disbursements</strong>
+        <p style="font-size: 13px; color: var(--notion-text-muted); margin-top: 4px;">
+          Monthly payroll is computed on the 28th and disbursed on the final day of each calendar month.
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// 7. PROFILE PAGE (NOTION PERSONAL VIEW)
+// -------------------------------------------------------------
+function renderProfilePage(container) {
+  const emp = store.employees[0];
+
+  container.innerHTML = `
+    <div class="page-icon">👤</div>
+    <h1 class="page-title">${emp.name}</h1>
+
+    <div class="properties-grid">
+      <div class="prop-label"><i class="fa-regular fa-id-badge"></i> Employee ID</div>
+      <div class="prop-value"><strong>${emp.id}</strong></div>
+
+      <div class="prop-label"><i class="fa-regular fa-envelope"></i> Work Email</div>
+      <div class="prop-value">${emp.email}</div>
+
+      <div class="prop-label"><i class="fa-solid fa-briefcase"></i> Designation</div>
+      <div class="prop-value"><span class="tag tag-blue">${emp.role}</span></div>
+
+      <div class="prop-label"><i class="fa-solid fa-phone"></i> Phone</div>
+      <div class="prop-value">${emp.phone}</div>
+
+      <div class="prop-label"><i class="fa-solid fa-building"></i> Department</div>
+      <div class="prop-value"><span class="tag tag-gray">${emp.department}</span></div>
+
+      <div class="prop-label"><i class="fa-regular fa-calendar"></i> Date of Joining</div>
+      <div class="prop-value">${emp.joinDate}</div>
+    </div>
+
+    <div class="notion-callout-box">
+      <div class="callout-icon">✨</div>
+      <div class="callout-content">
+        <div class="callout-title">Profile Synchronized</div>
+        <div class="callout-desc">Your profile data is synchronized with the Inxee HR database and local offline storage.</div>
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// MODALS & ACTIONS
+// -------------------------------------------------------------
+function openApplyLeaveModal() {
+  const modal = document.getElementById("modalContainer");
+  modal.innerHTML = `
+    <div class="notion-modal-overlay" onclick="closeModal(event)">
+      <div class="notion-modal" onclick="event.stopPropagation()">
+        <h3 style="font-size: 18px; margin-bottom: 16px;">Apply for Leave</h3>
+        
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--notion-text-muted); display: block; margin-bottom: 4px;">Subject / Reason</label>
+          <input type="text" id="mLeaveTitle" class="notion-input" placeholder="e.g. Sick Leave / Vacation">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--notion-text-muted); display: block; margin-bottom: 4px;">Target Date</label>
+          <input type="date" id="mLeaveDate" class="notion-input" value="${new Date().toISOString().split('T')[0]}">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--notion-text-muted); display: block; margin-bottom: 4px;">Details</label>
+          <textarea id="mLeaveDetails" class="notion-input" rows="3" placeholder="Explain your leave request..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="notion-btn-outline" onclick="closeModal()">Cancel</button>
+          <button class="notion-btn" onclick="submitModalLeave()">Submit Leave</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function submitModalLeave() {
+  const title = document.getElementById("mLeaveTitle").value;
+  const date = document.getElementById("mLeaveDate").value;
+  const details = document.getElementById("mLeaveDetails").value;
+
+  if (!title) {
+    alert("Please provide a title for the leave request.");
+    return;
+  }
+
+  store.leaveApplications.unshift({
+    id: "LV-" + Math.floor(100 + Math.random() * 900),
+    employeeId: "EMP001",
+    employeeName: "Deepanshu Garhkoti",
+    selectedDate: date,
+    range: "Full Day",
+    title: title,
+    application: details || title,
+    status: "Pending"
+  });
+
+  saveStore(store);
+  closeModal();
+  navigatePage("leaves");
+}
+
+function openAddMemberModal() {
+  const modal = document.getElementById("modalContainer");
+  modal.innerHTML = `
+    <div class="notion-modal-overlay" onclick="closeModal(event)">
+      <div class="notion-modal" onclick="event.stopPropagation()">
+        <h3 style="font-size: 18px; margin-bottom: 16px;">Add New Team Member</h3>
+        
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--notion-text-muted); display: block; margin-bottom: 4px;">Full Name</label>
+          <input type="text" id="mMemName" class="notion-input" placeholder="e.g. Vikram Joshi">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--notion-text-muted); display: block; margin-bottom: 4px;">Designation / Role</label>
+          <input type="text" id="mMemRole" class="notion-input" placeholder="e.g. Backend Engineer">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--notion-text-muted); display: block; margin-bottom: 4px;">Department</label>
+          <input type="text" id="mMemDept" class="notion-input" placeholder="e.g. Engineering">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="notion-btn-outline" onclick="closeModal()">Cancel</button>
+          <button class="notion-btn" onclick="submitModalMember()">Add Member</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function submitModalMember() {
+  const name = document.getElementById("mMemName").value;
+  const role = document.getElementById("mMemRole").value;
+  const dept = document.getElementById("mMemDept").value;
+
   if (!name) return;
-  const role = prompt("Enter Role/Designation:", "Software Engineer");
-  
-  const store = getStore();
-  const newEmp = {
+
+  store.employees.push({
     id: "EMP00" + (store.employees.length + 1),
     name: name,
     email: name.toLowerCase().replace(/\s+/g, '.') + "@inxee.com",
-    role: role || "Software Developer",
-    department: "Engineering",
+    role: role || "Software Engineer",
+    department: dept || "Engineering",
     joinDate: new Date().toISOString().split('T')[0],
     phone: "+91 98000 11223",
     avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80",
-    salary: { base: 30000, allowance: 5000, deductions: 1500, net: 33500 }
-  };
-  store.employees.push(newEmp);
+    salary: { base: 30000, allowance: 5000, deductions: 1500, net: 33500 },
+    tags: ["Full-Time"]
+  });
+
   saveStore(store);
-  renderEmployeesAdminScreen();
+  closeModal();
+  navigatePage("team");
 }
 
-function renderAdminSalaryScreen() {
-  const store = getStore();
+function openSearchModal() {
+  const modal = document.getElementById("modalContainer");
+  modal.innerHTML = `
+    <div class="notion-modal-overlay" onclick="closeModal(event)">
+      <div class="notion-modal" style="width: 480px; padding: 16px;" onclick="event.stopPropagation()">
+        <input type="text" id="quickSearchInput" class="notion-input" placeholder="Search pages, employees, leaves (Ctrl+K)..." autofocus oninput="handleQuickSearch(this.value)">
+        <div id="quickSearchResults" style="margin-top: 12px; font-size: 13px; max-height: 240px; overflow-y: auto;">
+          <div class="sidebar-item" onclick="navigatePage('overview'); closeModal();">⚡ Overview & Live Clock</div>
+          <div class="sidebar-item" onclick="navigatePage('attendance'); closeModal();">📅 Attendance Database</div>
+          <div class="sidebar-item" onclick="navigatePage('leaves'); closeModal();">🌴 Leave Management & Approval</div>
+          <div class="sidebar-item" onclick="navigatePage('salary'); closeModal();">💰 Payroll & Compensation</div>
+          <div class="sidebar-item" onclick="navigatePage('team'); closeModal();">👥 Team Directory</div>
+        </div>
+      </div>
+    </div>
+  `;
+  setTimeout(() => document.getElementById("quickSearchInput")?.focus(), 50);
+}
+
+function handleQuickSearch(query) {
+  const container = document.getElementById("quickSearchResults");
+  if (!query) {
+    container.innerHTML = `
+      <div class="sidebar-item" onclick="navigatePage('overview'); closeModal();">⚡ Overview & Live Clock</div>
+      <div class="sidebar-item" onclick="navigatePage('attendance'); closeModal();">📅 Attendance Database</div>
+      <div class="sidebar-item" onclick="navigatePage('leaves'); closeModal();">🌴 Leave Management & Approval</div>
+      <div class="sidebar-item" onclick="navigatePage('salary'); closeModal();">💰 Payroll & Compensation</div>
+      <div class="sidebar-item" onclick="navigatePage('team'); closeModal();">👥 Team Directory</div>
+    `;
+    return;
+  }
+
+  const q = query.toLowerCase();
+  const matches = store.employees.filter(e => e.name.toLowerCase().includes(q) || e.role.toLowerCase().includes(q));
   
-  appContent.innerHTML = `
-    <div class="card">
-      <div class="card-title"><i class="fa-solid fa-sack-dollar"></i> Employee Salary Management</div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Employee</th>
-            <th>Base</th>
-            <th>Net Pay</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${store.employees.map(e => `
-            <tr>
-              <td><strong>${e.name}</strong><br><span style="font-size: 11px; color: var(--text-muted);">${e.id}</span></td>
-              <td>₹${e.salary.base.toLocaleString()}</td>
-              <td style="font-weight: 700; color: #10b981;">₹${e.salary.net.toLocaleString()}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
+  container.innerHTML = matches.map(m => `
+    <div class="sidebar-item" onclick="navigatePage('team'); closeModal();">
+      <span class="item-emoji">👤</span>
+      <span>${m.name} (${m.role})</span>
     </div>
-  `;
+  `).join('') || `<div style="padding: 10px; color: var(--notion-text-subtle);">No matching items found</div>`;
 }
 
-function renderCheckInDetailsScreen() {
-  renderAttendanceScreen();
-}
-
-function renderProfileScreen() {
-  appContent.innerHTML = `
-    <div class="card" style="text-align: center;">
-      <img src="${currentUser.avatar}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 3px solid #000;">
-      <h3 style="font-size: 18px; font-weight: 600;">${currentUser.name}</h3>
-      <p style="font-size: 13px; color: var(--text-muted);">${currentUser.role}</p>
-      
-      <div style="margin-top: 20px; text-align: left; font-size: 13px;">
-        <div style="padding: 10px 0; border-bottom: 1px solid var(--border);">
-          <strong style="color: var(--text-muted);">Employee ID:</strong> ${currentUser.id}
-        </div>
-        <div style="padding: 10px 0; border-bottom: 1px solid var(--border);">
-          <strong style="color: var(--text-muted);">Email:</strong> ${currentUser.email}
-        </div>
-        <div style="padding: 10px 0; border-bottom: 1px solid var(--border);">
-          <strong style="color: var(--text-muted);">Phone:</strong> ${currentUser.phone || '+91 98765 43210'}
-        </div>
-        <div style="padding: 10px 0;">
-          <strong style="color: var(--text-muted);">Department:</strong> ${currentUser.department || 'Engineering'}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderReportScreen() {
-  appContent.innerHTML = `
-    <div class="card">
-      <div class="card-title"><i class="fa-solid fa-headset"></i> System Help & Support Report</div>
-      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Report an issue or request HR support using local offline storage.</p>
-      
-      <div class="form-group">
-        <label>Subject</label>
-        <input type="text" class="form-input" placeholder="Issue title...">
-      </div>
-      <div class="form-group">
-        <label>Description</label>
-        <textarea class="form-input" rows="4" placeholder="Describe your inquiry..."></textarea>
-      </div>
-      <button class="btn-primary" onclick="alert('Ticket logged successfully in local system dataset.'); renderHomeScreen();">SUBMIT REPORT</button>
-    </div>
-  `;
-}
-
-function logout() {
-  currentUser = null;
-  toggleDrawer();
-  renderLoginScreen('employee');
+function closeModal() {
+  document.getElementById("modalContainer").innerHTML = "";
 }

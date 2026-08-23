@@ -1,31 +1,57 @@
-// ignore_for_file: prefer_const_constructors
+// Inxee HR Management System - Modern Architecture
+// Senior Frontend Engineering Implementation
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:inxee_hr_application/screens/login_page_employee.dart';
+import 'package:inxee_hr_application/design_system/design_tokens.dart';
+import 'package:inxee_hr_application/screens/modern_login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   try {
     await Firebase.initializeApp();
   } catch (e) {
-    debugPrint("Firebase initialization skipped (offline/demo mode): $e");
+    debugPrint('Firebase initialization skipped (offline/demo mode): $e');
   }
 
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: InxeeHRApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class InxeeHRApp extends ConsumerWidget {
+  const InxeeHRApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      home: LoginPage(),
+      title: 'Inxee HR Management System',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      home: const ModernLoginPage(isAdminLogin: false),
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        return MediaQuery(
+          data: mediaQuery.copyWith(
+            textScaler: mediaQuery.textScaler.clamp(
+              minScaleFactor: 0.8,
+              maxScaleFactor: 1.2,
+            ),
+          ),
+          child: child!,
+        );
+      },
+      onGenerateTitle: (context) => 'Inxee HR System',
+      supportedLocales: const [
+        Locale('en', 'US'),
+      ],
     );
   }
 }

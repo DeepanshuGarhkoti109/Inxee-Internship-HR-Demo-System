@@ -176,6 +176,12 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "flutter_riverpod",
+      "rootUri": "file:///C:/Users/deepa/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_riverpod-2.6.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///D:/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -386,6 +392,12 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "riverpod",
+      "rootUri": "file:///C:/Users/deepa/AppData/Local/Pub/Cache/hosted/pub.dev/riverpod-2.6.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "shared_preferences",
       "rootUri": "file:///C:/Users/deepa/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences-2.2.3",
       "packageUri": "lib/",
@@ -462,6 +474,12 @@
       "rootUri": "file:///C:/Users/deepa/AppData/Local/Pub/Cache/hosted/pub.dev/stack_trace-1.12.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "state_notifier",
+      "rootUri": "file:///C:/Users/deepa/AppData/Local/Pub/Cache/hosted/pub.dev/state_notifier-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "stream_channel",
