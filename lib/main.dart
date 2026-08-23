@@ -7,6 +7,11 @@ import 'package:inxee_hr_application/screens/login_page_employee.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint("Firebase initialization skipped (offline/demo mode): $e");
+  }
 
   runApp(const MyApp());
 }

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inxee Internship HR Demo System</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- App Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Mobile Viewport Simulator Container -->
+  <div class="app-viewport">
+    
+    <!-- Phone Status Header -->
+    <div class="phone-header">
+      <span>09:41</span>
+      <div>
+        <i class="fa-solid fa-signal" style="margin-right: 6px;"></i>
+        <i class="fa-solid fa-wifi" style="margin-right: 6px;"></i>
+        <i class="fa-solid fa-battery-full"></i>
+      </div>
+    </div>
+
+    <!-- App Drawer Overlay -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+
+    <!-- Side Navigation Drawer -->
+    <div class="drawer" id="appDrawer">
+      <div class="drawer-header">
+        <img src="https://images.unsplash.com/photo-1517423738875-5ce310acd3da?auto=format&fit=crop&w=300&q=80" id="drawerAvatar" class="drawer-avatar" alt="Avatar">
+        <div class="drawer-user-info">
+          <h4 id="drawerName">Deepanshu Garhkoti</h4>
+          <p id="drawerEmail">deepanshuGarhkoti@gmail.com</p>
+        </div>
+      </div>
+      <ul class="drawer-menu" id="drawerMenuList">
+        <!-- Dynamically rendered -->
+      </ul>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <div class="app-bar" id="appBar">
+      <button onclick="toggleDrawer()"><i class="fa-solid fa-bars"></i></button>
+      <h2 id="appTitle">E M P L O Y E E   P A N E L</h2>
+      <button onclick="renderLoginScreen(currentRole === 'admin' ? 'employee' : 'admin')"><i class="fa-solid fa-user-gear"></i></button>
+    </div>
+
+    <!-- Top Tabs (Home / Attendance) -->
+    <div class="app-tabs" id="appTabs">
+      <button class="tab-btn active" id="tabHome" onclick="switchTab('home')">Home</button>
+      <button class="tab-btn" id="tabAttendance" onclick="switchTab('attendance')">Attendance</button>
+    </div>
+
+    <!-- Scrollable Screen Content Body -->
+    <div class="app-body" id="appContent">
+      <!-- Dynamically populated screens -->
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
