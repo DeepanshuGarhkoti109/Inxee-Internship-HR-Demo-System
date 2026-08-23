@@ -4,8 +4,11 @@
   "description": "Inxee Internship HR Demo System - Web Runner & Local Mock Dataset",
   "main": "demo_app/index.html",
   "scripts": {
-    "start": "python -m http.server 8080 --directory demo_app",
-    "dev": "python -m http.server 8080 --directory demo_app"
+    "start": "python -m http.server 3000 --directory build/web",
+    "flutter:serve": "python -m http.server 3000 --directory build/web",
+    "flutter:build": "flutter build web",
+    "flutter:run": "flutter run -d chrome",
+    "demo:lite": "python -m http.server 8080 --directory demo_app"
   },
   "keywords": [
     "flutter",

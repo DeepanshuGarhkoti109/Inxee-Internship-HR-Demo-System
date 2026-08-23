@@ -37,8 +37,8 @@ class TextFieldInput extends StatelessWidget {
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please enter a some values';
-        } else
-          null;
+        }
+        return null;
       },
       decoration: InputDecoration(
         hintText: hintText,
