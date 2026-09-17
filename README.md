@@ -1,117 +1,133 @@
 # Inxee Internship HR Demo System
 
-An end-to-end Human Resources (HR) & Attendance Management Application featuring an **Employee Portal**, **Admin Portal**, **Attendance Punch Clock**, **Leave Approval System**, and **Salary Payslip Viewer**. 
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter)](https://flutter.dev/)
+[![Web](https://img.shields.io/badge/Web-Runner-4CAF50?style=for-the-badge)](demo_app/index.html)
+[![Offline](https://img.shields.io/badge/Mode-Offline%20Demo-FF9800?style=for-the-badge)](#quick-start)
 
-This repository includes both a **Flutter Mobile/Desktop Application** and a **Web Application Runner** pre-loaded with an **Offline Local Dummy Dataset** (requiring zero external cloud or Firebase configuration to run immediately).
+An end-to-end HR and attendance management application featuring an employee portal, admin dashboard, attendance punch clock, leave workflow, and payroll preview. The project includes both a Flutter version and a locally runnable web demo with offline dummy data.
 
 ---
 
-## 📸 Visual Demo Preview
+## Project Overview
 
-| Employee Dashboard & Punch-In | Admin Management Panel |
-| :---: | :---: |
+This demo simulates a modern HR management system with both employee and administrative workflows. It is built to run without Firebase or backend configuration, making it simple to demonstrate locally in a browser or desktop environment.
+
+### Key Features
+
+- Employee punch-in and punch-out tracking
+- Leave application and approval workflow
+- Salary and payslip preview
+- Admin panel for employee oversight
+- OTP and password login simulation
+- Offline local dataset for instant demo use
+
+---
+
+## Demo Screenshots
+
+|                    Employee Dashboard                     |                 Admin Panel                 |
+| :-------------------------------------------------------: | :-----------------------------------------: |
 | ![Employee Dashboard](assets/demo/employee_dashboard.jpg) | ![Admin Panel](assets/demo/admin_panel.jpg) |
 
 ---
 
-## ⚡ Quickstart - Run Locally in Seconds
+## Quick Start
 
-No Flutter SDK or Firebase setup required! You can run the entire system locally with built-in mock data:
+No Flutter SDK or Firebase configuration is required for the local demo.
 
 ```bash
-# Clone the repository
 git clone https://github.com/DeepanshuGarhkoti109/Inxee-Internship-HR-Demo-System.git
 cd Inxee-Internship-HR-Demo-System
-
-# Start the local server
 npm start
-# OR using python directly:
-# python -m http.server 8080 --directory demo_app
 ```
 
-Then open your browser and navigate to:
-👉 **`http://localhost:8080`**
+Then open:
 
-### 🔑 Demo Login Credentials
+```text
+http://localhost:8080
+```
 
-| Role | Email | Password | Features Accessible |
-| :--- | :--- | :--- | :--- |
-| **Employee** | `deepanshuGarhkoti@gmail.com` | `password123` | Punch In/Out, Apply Leave, View Payslip, Profile |
-| **Admin** | `admin@inxee.com` | `password123` | Approve Leaves, Manage Employees, Salary Oversight |
-| **OTP Login** | Any Phone / Email | `1234` | High security 4-digit OTP demo authentication |
+### Demo Login Credentials
 
----
-
-## ✨ Key Features
-
-### 👤 Employee Portal
-- ⏱️ **Real-Time Punch Clock**: Instant Punch In & Punch Out with automatic daily duration tracking.
-- 📅 **Leave Application**: Apply for Full Day, First Half, or Second Half leaves with custom reasons and live approval status tracker.
-- 💵 **Digital Payslip & Salary**: Detailed breakdown of Basic Pay, HRA/Allowances, PF/TDS Deductions, and Net Salary.
-- 🔐 **Multi-Method Login**: Password or OTP SMS/Email authentication flow.
-- 📱 **Profile Management**: View employee code, designation, department, and contact information.
-
-### 🛡️ Admin Portal
-- 📊 **Executive Dashboard**: Company-wide attendance stats and metrics.
-- ✅ **Leave Approval Workflow**: Review, approve, or reject employee leave applications in real time.
-- 👥 **Employee Directory**: Manage workforce, search records, and add new employee profiles.
-- 💰 **Salary Disbursement**: Adjust base salary, allowances, and verify net monthly payouts.
-- 📑 **Audit Reports**: Submit and review HR helpdesk tickets and system reports.
+| Role     | Email                       | Password    |
+| :------- | :-------------------------- | :---------- |
+| Employee | deepanshuGarhkoti@gmail.com | password123 |
+| Admin    | admin@inxee.com             | password123 |
+| OTP Demo | Any phone/email             | 1234        |
 
 ---
 
-## 💾 Local Dummy Dataset Architecture
+## System Modules
 
-The system operates seamlessly offline using a structured local storage schema:
+### Employee Portal
 
-- **Employees**: Pre-configured profiles (Deepanshu Garhkoti, Rahul Sharma, Priya Patel).
-- **Attendance**: Historical punch-in/out timestamps and presence logs.
-- **Leave Requests**: Mock applications across Pending, Approved, and Rejected states.
-- **Salary Data**: Pre-calculated payslips and compensation structures.
+- Punch in and punch out with attendance tracking
+- Apply leave in half-day or full-day modes
+- View payslips and profile information
+- Secure login using password or OTP flow
 
-*All actions (Punch-in, Applying Leave, Approving Leave, Adding Employees) update the local state in real time.*
+### Admin Portal
+
+- Attendance overview and workforce metrics
+- Leave approval and rejection controls
+- Employee directory and profile management
+- Salary and payslip review workflow
 
 ---
 
-## 📱 Running with Flutter (Mobile / Desktop)
+## Local Data Model
 
-If you have Flutter installed on your machine:
+The project uses a local dummy dataset to simulate realistic HR operations:
+
+- Employees
+- Attendance logs
+- Leave requests
+- Salary records
+
+All actions update the in-memory state instantly for the demo environment.
+
+---
+
+## Repository Structure
+
+```text
+Inxee-Internship-HR-Demo-System/
+├── assets/
+│   └── demo/
+│       ├── employee_dashboard.jpg
+│       └── admin_panel.jpg
+├── demo_app/
+│   ├── index.html
+│   ├── styles.css
+│   └── app.js
+├── lib/
+│   ├── Common_panels/
+│   ├── employee_panels/
+│   ├── panels_ADMIN/
+│   ├── database/
+│   ├── screens/
+│   └── main.dart
+├── package.json
+├── pubspec.yaml
+├── README.md
+└── LICENSE
+```
+
+---
+
+## Running the Flutter Version
+
+If Flutter is installed locally:
 
 ```bash
-# Get dependencies
 flutter pub get
-
-# Run on available device (Chrome, Web, Android, iOS, Windows)
 flutter run
 ```
 
-> **Note**: Firebase initialization in `lib/main.dart` is wrapped with an automatic offline fallback catch block so the Flutter app runs without throwing missing configuration errors.
+This supports browser, desktop, or mobile targets depending on your environment.
 
 ---
 
-## 📁 Repository Structure
+## License
 
-```
-Inxee-Internship-HR-Demo-System/
-├── assets/                  # Demo images and screenshots
-│   └── demo/
-├── demo_app/                # Web Runner & Local Storage Application
-│   ├── index.html           # Main HTML5 App Container
-│   ├── styles.css           # Material 3 & Responsive Styling
-│   └── app.js               # Application Controller & Local Dataset
-├── lib/                     # Flutter Dart Source Code
-│   ├── Common_panels/       # Shared Home, Attendance & Profile Screens
-│   ├── employee_panels/     # Employee Dashboard & Navigation
-│   ├── panels_ADMIN/        # Admin Dashboard, Leave Approval & Salary
-│   ├── database/            # SQLite Helper Schemas
-│   ├── screens/             # Auth Screens (Login, Admin Login, OTP)
-│   └── main.dart            # Flutter Entrypoint
-├── package.json             # Web Runner NPM scripts
-└── pubspec.yaml             # Flutter Dependencies
-```
-
----
-
-## 📄 License
-
-This project was created for the Inxee Internship HR System project and is licensed under the MIT License.
+This project is licensed under the MIT License. It is intended for internship/demo and educational use.
